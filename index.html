@@ -1,0 +1,1848 @@
+<!DOCTYPE html>
+<html lang="pl" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#070a12" id="metaTheme">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="USA 2026">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>USA 2026 · Trip</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Figtree:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<!--
+  Zdjęcia: Wikimedia Commons (CC BY / CC BY-SA / PD):
+  · New york times square-terabass.jpg — Terabass, CC BY-SA 3.0
+  · US Capitol west side.JPG — Martin Falbisoner, CC BY-SA 3.0
+  · Las Vegas Strip lights at night.jpg — CC BY-SA 4.0
+  · USA Antelope-Canyon.jpg — Lucas Löffler, featured picture
+  · 0427 Grand Canyon Mather Point (5333623276).jpg — Grand Canyon NPS, CC BY 2.0
+  · Hollywood Sign.jpg — Der Wolf im Wald, CC BY-SA 3.0
+  · Tunnel View, Yosemite Valley, Yosemite NP - Diliff.jpg — David Iliff, CC BY-SA 3.0
+  · GoldenGateBridge-001.jpg — Rich Niewiroski Jr., CC BY 2.5
+  · Golden Gate Bridge as seen at twilight from Baker Beach.jpg — CC
+-->
+<style>
+:root{
+  --f-disp:'Sora',sans-serif;
+  --f-body:'Figtree',sans-serif;
+  --acc:#4f8ef7;
+}
+[data-theme="dark"]{
+  --bg:#070a12;
+  --scrim-a:rgba(5,8,18,.62); --scrim-b:rgba(4,6,14,.28); --scrim-c:rgba(5,8,16,.92);
+  --glass:rgba(14,18,30,.58); --glass-hi:rgba(20,26,42,.66);
+  --sheet:rgba(10,13,22,.62);
+  --line:rgba(255,255,255,.09); --line2:rgba(255,255,255,.16);
+  --tx:#f2f4fa; --tx2:#a8b0c4; --tx3:#5c6478;
+  --card:rgba(22,27,42,.55); --card-hi:rgba(30,36,54,.72);
+}
+[data-theme="light"]{
+  --bg:#eef0f5;
+  --scrim-a:rgba(245,247,252,.55); --scrim-b:rgba(245,247,252,.20); --scrim-c:rgba(240,243,250,.94);
+  --glass:rgba(255,255,255,.62); --glass-hi:rgba(255,255,255,.78);
+  --sheet:rgba(248,250,254,.72);
+  --line:rgba(10,15,30,.10); --line2:rgba(10,15,30,.18);
+  --tx:#12151f; --tx2:#454d63; --tx3:#8890a4;
+  --card:rgba(255,255,255,.72); --card-hi:rgba(255,255,255,.92);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{height:100%}
+body{
+  font-family:var(--f-body); background:var(--bg); color:var(--tx);
+  height:100dvh; display:flex; flex-direction:column; overflow:hidden;
+}
+
+/* ═══ PHOTO BACKGROUND ═══ */
+#bgWrap{position:fixed; inset:-60px 0 0 0; z-index:0; pointer-events:none; will-change:transform}
+#bgFallback,#bgA,#bgB{position:absolute; inset:0; background-position:center; background-size:cover; background-repeat:no-repeat}
+#bgFallback{transition:background 1s ease}
+#bgA,#bgB{opacity:0; transition:opacity .9s ease}
+#bgScrim{
+  position:fixed; inset:0; z-index:1; pointer-events:none;
+  background:linear-gradient(180deg, var(--scrim-a) 0%, var(--scrim-b) 34%, var(--scrim-b) 52%, var(--scrim-c) 88%);
+  transition:background .5s;
+}
+
+/* ═══ HEADER ═══ */
+header{
+  flex-shrink:0; position:relative; z-index:20;
+  padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px;
+  display:flex; align-items:center; justify-content:space-between;
+  background:var(--glass);
+  backdrop-filter:blur(24px) saturate(1.4); -webkit-backdrop-filter:blur(24px) saturate(1.4);
+  border-bottom:1px solid var(--line);
+}
+.logo{font-family:var(--f-disp); font-weight:800; font-size:1.02rem; letter-spacing:-.01em}
+.logo b{color:var(--acc); transition:color .5s}
+.hright{display:flex; align-items:center; gap:8px}
+.day-pill{
+  font-family:var(--f-disp); font-weight:600; font-size:.62rem; letter-spacing:.04em;
+  color:var(--tx2); background:var(--card); border:1px solid var(--line);
+  padding:5px 11px; border-radius:20px;
+}
+.tbtn{
+  width:33px; height:33px; border-radius:50%; border:1px solid var(--line2);
+  background:var(--card); color:var(--tx2); font-size:.85rem;
+  display:grid; place-items:center; cursor:pointer;
+  transition:transform .2s, background .3s;
+}
+.tbtn:active{transform:scale(.88)}
+
+/* progress bar */
+#prog{position:relative; z-index:19; height:2.5px; background:transparent; flex-shrink:0}
+#progFill{height:100%; width:0%; background:linear-gradient(90deg,var(--acc),transparent); border-radius:2px; transition:width .15s linear, background .5s}
+
+/* ═══ DAY CHIPS ═══ */
+.chips{
+  flex-shrink:0; display:flex; gap:7px; overflow-x:auto; scrollbar-width:none;
+  padding:10px 14px; position:relative; z-index:18;
+  scroll-snap-type:x proximity;
+}
+.chips::-webkit-scrollbar{display:none}
+.chip{
+  flex-shrink:0; scroll-snap-align:center; cursor:pointer; user-select:none;
+  display:flex; align-items:center; gap:6px;
+  background:var(--glass); border:1px solid var(--line);
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  border-radius:22px; padding:6px 12px 6px 7px;
+  transition:all .25s cubic-bezier(.22,1,.36,1);
+}
+.chip .n{
+  width:20px; height:20px; border-radius:50%; flex-shrink:0;
+  display:grid; place-items:center;
+  font-family:var(--f-disp); font-weight:700; font-size:.56rem;
+  background:var(--card-hi); color:var(--tx2);
+  transition:all .25s;
+}
+.chip .c{font-weight:600; font-size:.62rem; color:var(--tx2); white-space:nowrap; transition:color .25s}
+.chip.active{background:var(--acc); border-color:transparent; transform:scale(1.05); box-shadow:0 4px 18px -4px var(--acc)}
+.chip.active .n{background:rgba(255,255,255,.25); color:#fff}
+.chip.active .c{color:#fff}
+
+/* ═══ CONTENT ═══ */
+#content{
+  flex:1; min-height:0; overflow-y:auto; overflow-x:hidden;
+  position:relative; z-index:10;
+  -webkit-overflow-scrolling:touch; overscroll-behavior:contain;
+  scrollbar-width:none;
+}
+#content::-webkit-scrollbar{display:none}
+#content.sl-out-l{animation:slOutL .16s ease-in forwards}
+#content.sl-out-r{animation:slOutR .16s ease-in forwards}
+#content.sl-in-l{animation:slInL .38s cubic-bezier(.22,1,.36,1) forwards}
+#content.sl-in-r{animation:slInR .38s cubic-bezier(.22,1,.36,1) forwards}
+@keyframes slOutL{to{opacity:0; transform:translateX(-26px)}}
+@keyframes slOutR{to{opacity:0; transform:translateX(26px)}}
+@keyframes slInL{from{opacity:0; transform:translateX(26px)}to{opacity:1; transform:translateX(0)}}
+@keyframes slInR{from{opacity:0; transform:translateX(-26px)}to{opacity:1; transform:translateX(0)}}
+
+/* ═══ HERO ═══ */
+.hero{
+  min-height:34vh; display:flex; flex-direction:column; justify-content:flex-end;
+  padding:18px 18px 20px; position:relative;
+}
+.hero-date{
+  display:inline-flex; align-items:center; gap:6px; width:fit-content;
+  font-family:var(--f-disp); font-weight:600; font-size:.6rem; letter-spacing:.08em; text-transform:uppercase;
+  color:#fff; background:rgba(0,0,0,.32); border:1px solid rgba(255,255,255,.22);
+  backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  padding:5px 12px; border-radius:18px; margin-bottom:11px;
+}
+.hero-date .dot{width:5px; height:5px; border-radius:50%; background:var(--acc); transition:background .5s}
+.hero-weather{display:inline-flex; align-items:center; margin-left:2px}
+.hero-weather .wx-chip{
+  display:inline-flex; align-items:center; gap:3px;
+  padding-left:8px; margin-left:4px;
+  border-left:1px solid rgba(255,255,255,.28);
+  font-weight:700; letter-spacing:.02em;
+  animation:wxFade .5s ease;
+}
+.hero-weather .wx-load{opacity:.5; letter-spacing:.12em; padding-left:8px; margin-left:4px; border-left:1px solid rgba(255,255,255,.28)}
+@keyframes wxFade{from{opacity:0}to{opacity:1}}
+.hero-title{
+  font-family:var(--f-disp); font-weight:800; letter-spacing:-.02em;
+  font-size:clamp(1.35rem,6vw,1.9rem); line-height:1.12; color:#fff;
+  text-shadow:0 2px 24px rgba(0,0,0,.55), 0 1px 3px rgba(0,0,0,.4);
+  margin-bottom:13px; max-width:92%;
+}
+[data-theme="light"] .hero-title{color:#fff}
+.hero-row{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap}
+.hero-chips{display:flex; gap:6px; flex-wrap:wrap}
+.hchip{
+  font-weight:600; font-size:.6rem; color:#fff;
+  background:rgba(0,0,0,.30); border:1px solid rgba(255,255,255,.2);
+  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  padding:5px 11px; border-radius:16px;
+}
+.btn-go{
+  position:relative; display:inline-flex; align-items:center; gap:7px;
+  font-family:var(--f-disp); font-weight:700; font-size:.66rem; letter-spacing:.03em;
+  color:#fff; text-decoration:none; padding:11px 17px; border-radius:16px;
+  background:var(--acc); transition:background .5s, transform .15s;
+  box-shadow:0 6px 22px -6px var(--acc);
+  overflow:hidden;
+}
+.btn-go::after{
+  content:''; position:absolute; top:0; left:-70%; width:45%; height:100%;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.35),transparent);
+  transform:skewX(-14deg); animation:btnsheen 3.2s ease-in-out infinite;
+}
+@keyframes btnsheen{0%,55%{left:-70%}85%,100%{left:130%}}
+.btn-go:active{transform:scale(.95)}
+.btn-go svg{width:14px; height:14px}
+.photo-credit{
+  position:absolute; top:10px; right:14px;
+  font-size:.5rem; font-weight:500; letter-spacing:.06em;
+  color:rgba(255,255,255,.55); background:rgba(0,0,0,.25);
+  padding:3px 9px; border-radius:12px;
+  backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+}
+
+/* ═══ SHEET ═══ */
+.sheet{
+  position:relative; min-height:60vh;
+  background:var(--sheet);
+  backdrop-filter:blur(28px) saturate(1.3); -webkit-backdrop-filter:blur(28px) saturate(1.3);
+  border-top:1px solid var(--line2);
+  border-radius:26px 26px 0 0;
+  padding:9px 14px calc(30px + env(safe-area-inset-bottom,0px));
+  transition:background .5s;
+}
+.grab{width:38px; height:4px; border-radius:2px; background:var(--line2); margin:0 auto 13px}
+.sheet-head{
+  display:flex; align-items:baseline; justify-content:space-between;
+  padding:0 4px 11px;
+}
+.sheet-head h2{font-family:var(--f-disp); font-weight:700; font-size:.86rem; letter-spacing:-.01em}
+.sheet-head span{font-size:.62rem; font-weight:600; color:var(--tx3)}
+
+/* stop cards */
+.stop{
+  display:flex; align-items:flex-start; gap:12px;
+  background:var(--card); border:1px solid var(--line);
+  border-radius:18px; padding:13px 13px 14px; margin-bottom:8px;
+  text-decoration:none; color:inherit;
+  transition:transform .16s cubic-bezier(.22,1,.36,1), background .2s, border-color .2s;
+  opacity:0; transform:translateY(16px) scale(.98);
+}
+.stop.rv{animation:stopIn .5s cubic-bezier(.22,1.3,.36,1) forwards}
+@keyframes stopIn{to{opacity:1; transform:translateY(0) scale(1)}}
+.stop:active{transform:scale(.975); background:var(--card-hi)}
+.snum{
+  flex-shrink:0; width:30px; height:30px; border-radius:11px; margin-top:1px;
+  display:grid; place-items:center;
+  font-family:var(--f-disp); font-weight:800; font-size:.68rem; color:#fff;
+  background:linear-gradient(135deg, var(--acc), color-mix(in srgb, var(--acc) 55%, #000 20%));
+  box-shadow:0 3px 10px -3px var(--acc);
+  transition:background .5s, box-shadow .5s;
+}
+.sbody{flex:1; min-width:0}
+.stag{
+  display:inline-flex; align-items:center; gap:4px;
+  font-weight:700; font-size:.52rem; letter-spacing:.1em; text-transform:uppercase;
+  padding:2px 8px; border-radius:8px; margin-bottom:5px;
+}
+.st-reserved{background:rgba(250,204,21,.16); color:#eab308}
+.st-hotel{background:rgba(96,165,250,.15); color:#60a5fa}
+.st-drive{background:rgba(45,212,191,.14); color:#2dd4bf}
+.st-flight{background:rgba(248,113,113,.14); color:#f87171}
+.st-shop{background:rgba(244,114,182,.14); color:#f472b6}
+.st-food{background:rgba(163,230,53,.14); color:#a3e635}
+[data-theme="light"] .st-reserved{color:#a16207}
+[data-theme="light"] .st-hotel{color:#1d4ed8}
+[data-theme="light"] .st-drive{color:#0f766e}
+[data-theme="light"] .st-flight{color:#b91c1c}
+[data-theme="light"] .st-shop{color:#be185d}
+[data-theme="light"] .st-food{color:#4d7c0f}
+.sname{font-weight:700; font-size:.8rem; line-height:1.32; margin-bottom:3px}
+.stemp{
+  display:none; align-items:center; gap:2px;
+  font-family:var(--f-disp); font-weight:600; font-size:.6rem;
+  color:var(--tx2); background:var(--card-hi); border:1px solid var(--line);
+  padding:2px 8px; border-radius:11px; margin-bottom:5px; width:fit-content;
+}
+.stemp.has{display:inline-flex; animation:tempIn .35s ease}
+@keyframes tempIn{from{opacity:0; transform:translateY(-3px)}to{opacity:1; transform:translateY(0)}}
+.sdesc{font-weight:400; font-size:.66rem; line-height:1.55; color:var(--tx2)}
+.schev{flex-shrink:0; margin-top:6px; color:var(--tx3)}
+.schev svg{width:14px; height:14px; display:block}
+
+.endcap{
+  margin-top:16px; text-align:center;
+  font-family:var(--f-disp); font-weight:600; font-size:.6rem; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--tx3);
+}
+.endcap .flag{font-size:1rem; display:block; margin-bottom:5px}
+
+#netHint{
+  position:fixed; left:50%; transform:translateX(-50%);
+  bottom:calc(14px + env(safe-area-inset-bottom,0px));
+  z-index:40; display:flex; align-items:center; gap:9px;
+  font-size:.6rem; font-weight:600; color:var(--tx); line-height:1.4;
+  background:var(--glass-hi); border:1px solid var(--line2);
+  backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+  padding:9px 13px; border-radius:14px; max-width:88%;
+  box-shadow:0 8px 28px rgba(0,0,0,.3);
+  animation:hintIn .4s cubic-bezier(.22,1,.36,1);
+}
+#netHint b{cursor:pointer; padding:0 3px; color:var(--tx3); font-weight:800; font-size:.8rem}
+@keyframes hintIn{from{opacity:0; transform:translateX(-50%) translateY(12px)}to{opacity:1; transform:translateX(-50%) translateY(0)}}
+
+/* ═══ EDIT MODE ═══ */
+.sheet-actions{display:flex; align-items:center; gap:7px}
+.mini-btn{
+  display:inline-flex; align-items:center; gap:5px;
+  font-family:var(--f-disp); font-weight:600; font-size:.6rem; letter-spacing:.02em;
+  color:var(--tx2); background:var(--card); border:1px solid var(--line);
+  padding:6px 11px; border-radius:20px; cursor:pointer;
+  transition:all .2s;
+}
+.mini-btn svg{width:12px; height:12px}
+.mini-btn:active{transform:scale(.93)}
+.mini-btn.on{background:var(--acc); border-color:transparent; color:#fff; box-shadow:0 3px 12px -4px var(--acc)}
+
+/* editing container tweaks */
+.sheet.editing .stop{
+  cursor:default; align-items:center;
+  transition:transform .18s cubic-bezier(.22,1,.36,1), box-shadow .18s, opacity .18s, border-color .18s, margin .18s;
+}
+/* the card being dragged */
+.stop.dragging{
+  opacity:.96; transform:scale(1.04) rotate(-.6deg);
+  box-shadow:0 14px 34px -8px rgba(0,0,0,.55);
+  border-color:var(--acc); z-index:30; position:relative;
+}
+/* gap that opens where the card will drop */
+.stop.shift-down{transform:translateY(64px)}
+.stop.shift-up{transform:translateY(-64px)}
+/* drop indicator line */
+.drop-line{
+  height:0; margin:0; border-radius:2px; background:var(--acc);
+  box-shadow:0 0 10px var(--acc);
+  transition:height .15s, margin .15s; pointer-events:none;
+}
+.drop-line.show{height:3px; margin:5px 4px}
+
+/* edit controls inside a stop */
+.edit-ctrls{
+  display:none; flex-direction:column; gap:6px; flex-shrink:0; margin-left:2px;
+}
+.sheet.editing .edit-ctrls{display:flex}
+.sheet.editing .schev{display:none}
+.ec-btn{
+  width:30px; height:30px; border-radius:9px; border:1px solid var(--line);
+  background:var(--card-hi); color:var(--tx2);
+  display:grid; place-items:center; cursor:pointer; padding:0;
+  transition:all .15s;
+}
+.ec-btn svg{width:15px; height:15px}
+.ec-btn:active{transform:scale(.88)}
+.ec-btn.del{color:#f87171}
+.ec-btn.del:active{background:rgba(248,113,113,.16)}
+.ec-btn:disabled{opacity:.28; cursor:default}
+
+/* BIG obvious drag handle on the left */
+.sheet.editing .snum{
+  background:var(--card-hi) !important; color:var(--tx2) !important;
+  box-shadow:none !important; cursor:grab; touch-action:none;
+  width:34px; height:44px; border-radius:11px; border:1px solid var(--line2);
+  font-size:1rem; letter-spacing:-1px; position:relative;
+}
+.sheet.editing .snum::after{
+  content:'⠿'; font-size:1.15rem; line-height:1; opacity:.75;
+}
+.sheet.editing .snum > *{display:none}
+.snum.grabbing{cursor:grabbing; background:var(--acc) !important; color:#fff !important; border-color:transparent !important}
+
+/* editable text fields */
+.sheet.editing .sname[contenteditable],
+.sheet.editing .sdesc[contenteditable]{
+  outline:none; border-radius:7px;
+  padding:4px 7px; margin:-2px -3px 2px;
+  transition:background .2s, box-shadow .2s;
+}
+.sheet.editing .sname[contenteditable]{background:rgba(128,140,170,.10)}
+.sheet.editing .sdesc[contenteditable]{background:rgba(128,140,170,.07)}
+.sheet.editing .sname[contenteditable]:focus{
+  background:var(--card-hi); box-shadow:0 0 0 1.5px var(--acc);
+}
+.sheet.editing .sdesc[contenteditable]:focus{
+  background:var(--card-hi); box-shadow:0 0 0 1.5px var(--acc);
+}
+.sheet.editing .sname[contenteditable]:empty::before{content:'Nazwa miejsca…'; color:var(--tx3)}
+.sheet.editing .sdesc[contenteditable]:empty::before{content:'Opis / adres / wskazówka…'; color:var(--tx3)}
+
+/* coordinate row in edit */
+.coord-row{display:none; align-items:center; gap:6px; margin-top:7px; flex-wrap:wrap}
+.sheet.editing .coord-row{display:flex}
+.coord-inp{
+  width:96px; font-family:var(--f-mono,monospace); font-size:.6rem; color:var(--tx);
+  background:var(--card-hi); border:1px solid var(--line); border-radius:8px;
+  padding:5px 8px; outline:none;
+}
+.coord-inp:focus{box-shadow:0 0 0 1.5px var(--acc)}
+.coord-lbl{font-size:.55rem; font-weight:600; color:var(--tx3); letter-spacing:.04em}
+.coord-hint{font-size:.55rem; color:var(--tx3); width:100%; line-height:1.4}
+.coord-hint a{color:var(--acc); text-decoration:underline}
+
+/* add-stop button */
+.add-stop{
+  display:none; align-items:center; justify-content:center; gap:8px; width:100%;
+  font-family:var(--f-disp); font-weight:700; font-size:.74rem;
+  color:#fff; background:var(--acc);
+  border:none; border-radius:16px;
+  padding:15px; margin:6px 0; cursor:pointer;
+  box-shadow:0 5px 18px -6px var(--acc);
+  transition:all .2s;
+}
+.sheet.editing .add-stop{display:flex}
+.add-stop svg{width:17px; height:17px}
+.add-stop:active{transform:scale(.98)}
+
+/* reset row */
+.reset-row{display:none; margin:2px 0 8px; justify-content:center}
+.sheet.editing .reset-row{display:flex}
+.reset-btn{
+  display:inline-flex; align-items:center; gap:7px;
+  font-family:var(--f-disp); font-weight:600; font-size:.66rem;
+  color:#f87171; background:rgba(248,113,113,.10);
+  border:1px solid rgba(248,113,113,.3); border-radius:14px;
+  padding:11px 18px; cursor:pointer; transition:all .2s;
+}
+.reset-btn svg{width:14px; height:14px}
+.reset-btn:active{transform:scale(.96); background:rgba(248,113,113,.18)}
+
+/* tag picker in edit */
+.tag-picker{display:none; flex-wrap:wrap; gap:5px; margin-bottom:7px}
+.sheet.editing .tag-picker{display:flex}
+.tag-opt{
+  font-family:var(--f-disp); font-weight:700; font-size:.5rem; letter-spacing:.06em;
+  text-transform:uppercase; padding:4px 9px; border-radius:8px; cursor:pointer;
+  border:1px solid var(--line); color:var(--tx3); background:transparent;
+  transition:all .15s;
+}
+.tag-opt:active{transform:scale(.92)}
+.tag-opt.sel{border-color:transparent; color:#fff}
+.tag-opt.sel.t-reserved{background:#eab308} .tag-opt.sel.t-hotel{background:#60a5fa}
+.tag-opt.sel.t-drive{background:#2dd4bf} .tag-opt.sel.t-flight{background:#f87171}
+.tag-opt.sel.t-shop{background:#f472b6} .tag-opt.sel.t-food{background:#a3e635}
+
+/* ═══ SETTINGS PANEL ═══ */
+#setOverlay{
+  position:fixed; inset:0; z-index:70; background:rgba(0,0,0,.5);
+  opacity:0; pointer-events:none; transition:opacity .3s;
+  backdrop-filter:blur(2px); -webkit-backdrop-filter:blur(2px);
+}
+#setOverlay.show{opacity:1; pointer-events:auto}
+#setPanel{
+  position:fixed; left:0; right:0; bottom:0; z-index:71;
+  max-height:88dvh; display:flex; flex-direction:column;
+  background:var(--sheet); border-top:1px solid var(--line2);
+  border-radius:26px 26px 0 0;
+  backdrop-filter:blur(30px) saturate(1.3); -webkit-backdrop-filter:blur(30px) saturate(1.3);
+  transform:translateY(102%); transition:transform .38s cubic-bezier(.22,1,.36,1);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  box-shadow:0 -12px 40px rgba(0,0,0,.4);
+}
+#setPanel.show{transform:translateY(0)}
+.set-grab{width:40px; height:4px; border-radius:2px; background:var(--line2); margin:10px auto 4px}
+.set-head{display:flex; align-items:center; justify-content:space-between; padding:6px 18px 12px}
+.set-head h2{font-family:var(--f-disp); font-weight:800; font-size:1.15rem; letter-spacing:-.01em}
+.set-close{
+  width:32px; height:32px; border-radius:50%; border:1px solid var(--line2);
+  background:var(--card); color:var(--tx2); font-size:.8rem; cursor:pointer;
+  display:grid; place-items:center; transition:transform .2s;
+}
+.set-close:active{transform:scale(.9)}
+.set-scroll{overflow-y:auto; padding:0 16px 22px; scrollbar-width:none}
+.set-scroll::-webkit-scrollbar{display:none}
+
+.set-status{
+  font-family:var(--f-disp); font-weight:600; font-size:.66rem; text-align:center;
+  color:var(--tx2); background:var(--card); border:1px solid var(--line);
+  border-radius:12px; padding:9px; margin-bottom:14px;
+}
+.set-status.saved{color:#4ade80; border-color:rgba(74,222,128,.3); background:rgba(74,222,128,.08)}
+.set-status.unsaved{color:#fbbf24; border-color:rgba(251,191,36,.3); background:rgba(251,191,36,.08)}
+
+.set-group{margin-bottom:16px}
+.set-glabel{
+  font-family:var(--f-disp); font-weight:700; font-size:.56rem; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--tx3); margin:0 4px 8px;
+}
+.set-action{
+  width:100%; display:flex; align-items:center; gap:13px; text-align:left;
+  background:var(--card); border:1px solid var(--line); border-radius:15px;
+  padding:13px 14px; margin-bottom:8px; cursor:pointer; color:var(--tx);
+  transition:transform .15s, background .2s, border-color .2s;
+}
+.set-action:active{transform:scale(.98); background:var(--card-hi)}
+.set-action .sa-ico{font-size:1.3rem; flex-shrink:0; width:26px; text-align:center}
+.set-action .sa-txt{display:flex; flex-direction:column; gap:2px; min-width:0}
+.set-action .sa-txt b{font-family:var(--f-disp); font-weight:700; font-size:.8rem}
+.set-action .sa-txt small{font-size:.62rem; color:var(--tx2); line-height:1.35}
+.set-action.primary{background:var(--acc); border-color:transparent; box-shadow:0 5px 18px -6px var(--acc)}
+.set-action.primary b, .set-action.primary small{color:#fff}
+.set-action.primary small{color:rgba(255,255,255,.82)}
+.set-action.danger{border-color:rgba(248,113,113,.3)}
+.set-action.danger b{color:#f87171}
+
+.set-row{
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  background:var(--card); border:1px solid var(--line); border-radius:15px;
+  padding:12px 14px; margin-bottom:8px;
+}
+.set-row .sr-txt{display:flex; flex-direction:column; gap:2px; min-width:0}
+.set-row .sr-txt b{font-family:var(--f-disp); font-weight:700; font-size:.78rem}
+.set-row .sr-txt small{font-size:.61rem; color:var(--tx2); line-height:1.35}
+.set-toggle{
+  position:relative; width:46px; height:26px; flex-shrink:0; border-radius:13px;
+  border:none; background:var(--line2); cursor:pointer; transition:background .3s; padding:0;
+}
+.set-toggle::before{
+  content:''; position:absolute; top:3px; left:3px; width:20px; height:20px;
+  border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.35);
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+}
+.set-toggle.on{background:var(--acc)}
+.set-toggle.on::before{transform:translateX(20px)}
+
+.set-about{
+  text-align:center; font-size:.6rem; line-height:1.6; color:var(--tx3);
+  margin-top:6px; padding:10px;
+}
+
+/* ═══ CHECKLIST / PROGRESS / HIDE ═══ */
+.day-prog{margin:2px 2px 12px}
+.dp-top{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:7px}
+.dp-label{font-family:var(--f-disp); font-weight:700; font-size:.66rem; color:var(--tx)}
+.dp-actions{display:flex; gap:6px}
+.dp-btn{
+  font-family:var(--f-disp); font-weight:600; font-size:.56rem; letter-spacing:.02em;
+  color:var(--tx2); background:var(--card); border:1px solid var(--line);
+  padding:4px 10px; border-radius:14px; cursor:pointer; transition:all .18s; white-space:nowrap;
+}
+.dp-btn:active{transform:scale(.94); background:var(--card-hi)}
+.dp-bar{height:6px; border-radius:4px; background:var(--card); overflow:hidden; border:1px solid var(--line)}
+.dp-fill{height:100%; border-radius:4px; background:linear-gradient(90deg,var(--acc),color-mix(in srgb,var(--acc) 60%,#fff 25%)); transition:width .4s cubic-bezier(.22,1,.36,1)}
+
+/* checkbox in view mode (replaces the number circle) */
+.scheck{
+  flex-shrink:0; width:30px; height:30px; margin-top:1px; padding:0;
+  border-radius:50%; border:2px solid var(--line2); background:transparent;
+  color:#fff; cursor:pointer; display:grid; place-items:center;
+  transition:all .2s cubic-bezier(.34,1.56,.64,1);
+}
+.scheck svg{width:15px; height:15px}
+.scheck.on{
+  background:var(--acc); border-color:transparent;
+  box-shadow:0 3px 10px -3px var(--acc); transform:scale(1.05);
+}
+.scheck:active{transform:scale(.85)}
+
+/* done state — dim + strike */
+.stop.done{opacity:.5}
+.stop.done .sname{text-decoration:line-through; text-decoration-color:var(--tx3); color:var(--tx2)}
+.stop.done .sdesc{opacity:.7}
+
+/* hide toggle button (small, right side, view mode) */
+.shide-btn{
+  flex-shrink:0; width:30px; height:30px; margin-top:4px; padding:0;
+  border-radius:9px; border:1px solid var(--line); background:transparent;
+  color:var(--tx3); cursor:pointer; display:grid; place-items:center;
+  transition:all .18s; opacity:.6;
+}
+.shide-btn svg{width:15px; height:15px}
+.shide-btn:active{transform:scale(.86); background:var(--card-hi)}
+
+/* hidden stops — collapsed by default, revealed with .show-hidden */
+.stop.hidden{display:none}
+.sheet.show-hidden .stop.hidden{display:flex; opacity:.42}
+.sheet.show-hidden .stop.hidden .shide-btn{opacity:1; color:var(--acc)}
+.hidden-badge{
+  font-family:var(--f-disp); font-weight:700; font-size:.5rem; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--tx3); border:1px solid var(--line);
+  border-radius:6px; padding:1px 6px; margin-left:6px; vertical-align:middle;
+}
+/* in edit mode always show hidden ones (so you can un-hide) */
+.sheet.editing .stop.hidden{display:flex; opacity:.5}
+.sheet.editing .ec-btn.hide{color:var(--tx2)}
+.sheet.editing .stop.hidden .ec-btn.hide{color:var(--acc)}
+
+/* toggleable settings classes */
+html.no-anim *{animation:none !important; transition:none !important}
+html.no-photos #bgA, html.no-photos #bgB{display:none !important}
+
+/* toast */
+/* update banner */
+#updBanner{
+  position:fixed; left:12px; right:12px; z-index:80;
+  top:calc(8px + env(safe-area-inset-top,0px));
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  font-family:var(--f-disp); font-weight:600; font-size:.7rem; color:#fff;
+  background:linear-gradient(135deg,var(--acc),color-mix(in srgb,var(--acc) 60%,#000 25%));
+  padding:11px 12px 11px 15px; border-radius:15px;
+  box-shadow:0 8px 30px -6px rgba(0,0,0,.5);
+  animation:updIn .45s cubic-bezier(.22,1.2,.36,1);
+}
+@keyframes updIn{from{opacity:0; transform:translateY(-16px)}to{opacity:1; transform:translateY(0)}}
+#updBanner button{
+  flex-shrink:0; font-family:var(--f-disp); font-weight:700; font-size:.68rem;
+  color:var(--acc); background:#fff; border:none; border-radius:11px;
+  padding:8px 15px; cursor:pointer; transition:transform .15s;
+}
+#updBanner button:active{transform:scale(.94)}
+
+#toast{
+  position:fixed; left:50%; transform:translateX(-50%) translateY(20px);
+  bottom:calc(20px + env(safe-area-inset-bottom,0px)); z-index:60;
+  font-family:var(--f-disp); font-weight:600; font-size:.66rem; color:#fff;
+  background:rgba(20,24,38,.94); border:1px solid var(--line2);
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  padding:10px 16px; border-radius:13px; opacity:0; pointer-events:none;
+  transition:opacity .3s, transform .3s; box-shadow:0 8px 30px rgba(0,0,0,.4);
+  display:flex; align-items:center; gap:12px; max-width:92%;
+}
+#toast.show{opacity:1; transform:translateX(-50%) translateY(0); pointer-events:auto}
+#toast .undo{color:var(--acc); font-weight:700; cursor:pointer; white-space:nowrap}
+
+/* edit hint banner */
+.edit-hint{
+  display:none; font-size:.6rem; font-weight:500; color:var(--tx2); line-height:1.5;
+  background:var(--card); border:1px solid var(--line);
+  border-radius:12px; padding:9px 12px; margin-bottom:9px;
+}
+.sheet.editing .edit-hint{display:block}
+.edit-hint b{color:var(--acc)}
+
+
+@media (prefers-reduced-motion:reduce){
+  .btn-go::after{animation:none}
+}
+</style>
+</head>
+<body>
+
+<div id="bgWrap">
+  <div id="bgFallback"></div>
+  <div id="bgA"></div>
+  <div id="bgB"></div>
+</div>
+<div id="bgScrim"></div>
+
+<header>
+  <div class="logo">USA <b>2026</b></div>
+  <div class="hright">
+    <div class="day-pill" id="dayPill">Dzień 1/19</div>
+    <button class="tbtn" id="setBtn" aria-label="Ustawienia">⚙</button>
+    <button class="tbtn" id="tbtn" aria-label="Motyw">☾</button>
+  </div>
+</header>
+<div id="prog"><div id="progFill"></div></div>
+
+<nav class="chips" id="chips"></nav>
+
+<main id="content"></main>
+
+<div id="toast"></div>
+
+<!-- SETTINGS PANEL -->
+<div id="setOverlay"></div>
+<div id="setPanel">
+  <div class="set-grab"></div>
+  <div class="set-head">
+    <h2>Ustawienia</h2>
+    <button class="set-close" id="setClose" aria-label="Zamknij">✕</button>
+  </div>
+  <div class="set-scroll">
+
+    <div class="set-status" id="setStatus"></div>
+
+    <div class="set-group">
+      <div class="set-glabel">Twoje zmiany</div>
+      <button class="set-action primary" id="saveBtn">
+        <span class="sa-ico">💾</span>
+        <span class="sa-txt"><b>Zapisz zmiany</b><small>Zostaną na tym urządzeniu po zamknięciu</small></span>
+      </button>
+      <button class="set-action" id="exportBtn">
+        <span class="sa-ico">📤</span>
+        <span class="sa-txt"><b>Eksportuj plan do pliku</b><small>Przenieś na inny telefon / zrób kopię</small></span>
+      </button>
+      <button class="set-action" id="importBtn">
+        <span class="sa-ico">📥</span>
+        <span class="sa-txt"><b>Wczytaj plan z pliku</b><small>Przywróć z wcześniejszej kopii</small></span>
+      </button>
+      <input type="file" id="importFile" accept="application/json,.json" style="display:none">
+      <button class="set-action danger" id="delBtn">
+        <span class="sa-ico">🗑️</span>
+        <span class="sa-txt"><b>Usuń zapis</b><small>Wróć do oryginalnego planu</small></span>
+      </button>
+    </div>
+
+    <div class="set-group">
+      <div class="set-glabel">Wygląd</div>
+      <div class="set-row">
+        <div class="sr-txt"><b>Ciemny motyw</b><small>Jasny / ciemny wygląd</small></div>
+        <button class="set-toggle" id="tgTheme" role="switch"></button>
+      </div>
+      <div class="set-row">
+        <div class="sr-txt"><b>Zdjęcia w tle</b><small>Wyłącz, jeśli wolisz gładkie tło / oszczędzasz dane</small></div>
+        <button class="set-toggle" id="tgPhotos" role="switch"></button>
+      </div>
+      <div class="set-row">
+        <div class="sr-txt"><b>Animacje</b><small>Efekty przejść i wjazdu kart</small></div>
+        <button class="set-toggle" id="tgAnim" role="switch"></button>
+      </div>
+      <div class="set-row">
+        <div class="sr-txt"><b>Temperatura przy miejscach</b><small>Aktualna pogoda dla każdego przystanku (wymaga internetu)</small></div>
+        <button class="set-toggle" id="tgWeather" role="switch"></button>
+      </div>
+    </div>
+
+    <div class="set-group">
+      <div class="set-glabel">Nawigacja</div>
+      <div class="set-row">
+        <div class="sr-txt"><b>Otwieraj na dzisiejszym dniu</b><small>Po włączeniu aplikacji od razu pokaże aktualny dzień wyjazdu</small></div>
+        <button class="set-toggle" id="tgAutoToday" role="switch"></button>
+      </div>
+      <div class="set-row">
+        <div class="sr-txt"><b>Przesuwanie palcem między dniami</b><small>Swipe w lewo/prawo zmienia dzień</small></div>
+        <button class="set-toggle" id="tgSwipe" role="switch"></button>
+      </div>
+      <button class="set-action" id="jumpTodayBtn">
+        <span class="sa-ico">📅</span>
+        <span class="sa-txt"><b>Skocz do dziś</b><small>Otwórz dzień zgodny z dzisiejszą datą (podczas wyjazdu)</small></span>
+      </button>
+    </div>
+
+    <div class="set-group">
+      <div class="set-glabel">Aplikacja</div>
+      <button class="set-action" id="updateBtn">
+        <span class="sa-ico">🔄</span>
+        <span class="sa-txt"><b>Sprawdź aktualizacje</b><small>Pobierz najnowszą wersję planu, jeśli została wgrana</small></span>
+      </button>
+    </div>
+
+    <div class="set-about">🇺🇸 USA 2026 · 19 dni · 12–30 lipca<br>Plan zapisywany lokalnie w Twojej przeglądarce.<br><span id="verLabel"></span></div>
+  </div>
+</div>
+
+<script>
+/* ═══ WERSJA APLIKACJI (bumpowana przy każdej aktualizacji) ═══ */
+const APP_VERSION='2026.07.16.3';
+
+/* ═══ DATA ═══ */
+const DAYS_ORIGINAL=[
+{label:"Dzień 1",date:"12.07",city:"Przylot – Nowy Jork JFK",stops:[
+  {maps:"John F. Kennedy International Airport, Queens, NY",name:"Lotnisko JFK",desc:"Lądowanie. AirTrain → Jamaica Station → metro E do 23rd St (~55 min, $8.65/os) lub Uber z bagażami (~$55–60, 45 min)",lat:40.6413,lng:-73.7781,tag:'flight'},
+  {maps:"Hyatt Place New York Chelsea, 140 W 24th St, New York",name:"Hyatt Place NY/Chelsea – zameldowanie",desc:"140 W 24th St. Metro E wychodzi bezpośrednio pod hotelem (23rd St/6th Ave). Rezerwacja 12–17.07",lat:40.7444,lng:-73.9931,tag:'hotel'},
+  {maps:"The High Line, New York",name:"High Line Park",desc:"Lekki spacer – 2 min od hotelu! Park na starych torach kolejowych",lat:40.7480,lng:-74.0048},
+  {maps:"Times Square, New York",name:"Times Square wieczorem",desc:"Alternatywnie krótki rzut oka na neony. Jet lag (6–7h różnicy) – nie planuj nic intensywnego!",lat:40.7580,lng:-73.9855},
+]},
+{label:"Dzień 2",date:"13.07",city:"Dolny Manhattan + SoHo + DUMBO + Top of the Rock",stops:[
+  {maps:"Staten Island Ferry Whitehall Terminal, New York",name:"Staten Island Ferry",desc:"Metro E do Whitehall St (12 min) → 3 min pieszo do terminalu. Bezpłatny prom – Statua Wolności z wody! ~1h w obie strony",lat:40.7016,lng:-74.0132},
+  {maps:"Trinity Church, 89 Broadway, New York",name:"Trinity Church – Kościół Św. Trójcy",desc:"75 Broadway, od 1846 r. Bezpłatny, ~15 min",lat:40.7081,lng:-74.0134},
+  {maps:"New York Stock Exchange, 11 Wall St, New York",name:"Wall Street + NYSE",desc:"Giełda nowojorska, serce finansowego świata",lat:40.7069,lng:-74.0113},
+  {maps:"Fearless Girl Statue, New York",name:"Fearless Girl – Nieustraszona Dziewczynka",desc:"Słynny posąg dziewczynki naprzeciw giełdy",lat:40.7056,lng:-74.0134},
+  {maps:"FDNY Ten House, 124 Liberty St, New York",name:"FDNY Hook & Ladder 10",desc:"124 Liberty St – remiza bohaterów 9/11, memorial na ścianie",lat:40.7101,lng:-74.0122},
+  {maps:"St. Paul's Chapel, 209 Broadway, New York",name:"St. Paul's Chapel – Kościół Św. Pawła",desc:"209 Broadway, od 1766 – najstarszy kościół Manhattanu, szpital po 9/11",lat:40.7113,lng:-74.0091},
+  {maps:"Oculus, World Trade Center, New York",name:"The Oculus",desc:"Futurystyczny biały budynek-skrzydła przy World Trade Center, bezpłatny",lat:40.7115,lng:-74.0113},
+  {maps:"Nom Wah Tea Parlor, 13 Doyers St, New York",name:"Chinatown – dim sum",desc:"Nom Wah Tea Parlor (13 Doyers St, od 1920!) – najstarsza herbaciarnia. ~$10–15/os",lat:40.7146,lng:-73.9975,tag:'food'},
+  {maps:"New York or Nowhere Store, 250 Lafayette St, New York",name:"New York or Nowhere",desc:"250 Lafayette St – kultowy NYC merchandise",lat:40.7222,lng:-73.9965,tag:'shop'},
+  {maps:"Subdued, 496 Broadway, New York",name:"Subdued SoHo",desc:"496 Broadway – włoska marka dla nastolatek, 1. sklep w USA!",lat:40.7223,lng:-74.0007,tag:'shop'},
+  {maps:"Sorate, 103 Sullivan St, New York",name:"Sorate Matcha",desc:"103 Sullivan St, SoHo – najelegantsza matcha w NYC (~$7–9)",lat:40.7256,lng:-74.0043,tag:'food'},
+  {maps:"Russ & Daughters, 179 E Houston St, New York",name:"Lower East Side",desc:"Russ & Daughters (179 E Houston, bagel z łososiem od 1914), Eldridge Street Synagogue, Orchard Street",lat:40.7223,lng:-73.9878},
+  {maps:"Brooklyn Bridge, New York",name:"Brooklyn Bridge – spacer",desc:"Przejście pieszo na Brooklyn (~30 min), kultowe widoki",lat:40.7061,lng:-73.9969},
+  {maps:"Junior's Restaurant, 386 Flatbush Avenue Ext, Brooklyn",name:"Junior's Restaurant",desc:"386 Flatbush Ave, Brooklyn – kultowy sernik nowojorski od 1950 (~$8–10/kawałek)",lat:40.6896,lng:-73.9797,tag:'food'},
+  {maps:"Dumbo Manhattan Bridge View, Washington St, Brooklyn",name:"DUMBO – Washington Street",desc:"Najsłynniejsze zdjęcie NYC: most Manhattan w ramie ulicy! + Empire Stores (taras) + Pebble Beach",lat:40.7033,lng:-73.9894},
+  {maps:"FAO Schwarz, 30 Rockefeller Plaza, New York",name:"Jellycat Diner – FAO Schwarz",desc:"30 Rockefeller Plaza – unikalne pluszaki, zamawiane jak w dinerze! Metro F z York St → 47-50th Sts (25 min)",lat:40.7587,lng:-73.9787,tag:'shop'},
+  {maps:"Top of the Rock, 30 Rockefeller Plaza, New York",name:"Top of the Rock – 19:20",desc:"⭐ ZAREZERWOWANE! Taras 360° – Empire State + zachód słońca. Powrót metro C/E z 50th → 23rd (8 min)",lat:40.7593,lng:-73.9790,tag:'reserved'},
+]},
+{label:"Dzień 3",date:"14.07",city:"Midtown + Stranger Things na Broadwayu",stops:[
+  {maps:"PS 11 William T. Harris School, 320 W 21st St, New York",name:"PS 11 William T. Harris – 9:00",desc:"320 W 21st St, 3 min od hotelu! Amerykańska szkoła – boisko na dachu, żółte autobusy",lat:40.7440,lng:-74.0008},
+  {maps:"Central Park, New York",name:"Central Park – rower – 9:30",desc:"Metro C/E do 72nd St. Citi Bike ~$15/os – objazd parku",lat:40.7712,lng:-73.9741},
+  {maps:"The Metropolitan Museum of Art, 1000 5th Ave, New York",name:"Schody Met – 11:00",desc:"1000 5th Ave – Gossip Girl (tron Blair Waldorf!), Met Gala, Sabrina Carpenter. Usiądź z kawą jak Blair!",lat:40.7794,lng:-73.9632},
+  {maps:"The Plaza Hotel, 768 5th Ave, New York",name:"The Plaza Hotel – 11:40",desc:"5th Ave/59th St – Home Alone 2! Lobby bezpłatne. 20 min pieszo wzdłuż 5th Ave",lat:40.7645,lng:-73.9744},
+  {maps:"Roosevelt Island Tramway, E 59th St, New York",name:"Roosevelt Island Tramway – 12:20",desc:"59th St/2nd Ave – czerwona kolejka ze Spider-Mana! 4 min nad East River, $2.90/os",lat:40.7614,lng:-73.9642},
+  {maps:"Strand Book Store, 828 Broadway, New York",name:"Strand Bookstore – 13:20",desc:"828 Broadway – 18 mil książek, ikona NYC. Metro N/R/W z 59th → 14th (10 min)",lat:40.7333,lng:-73.9910,tag:'shop'},
+  {maps:"Union Square, New York",name:"Lunch – 14:15",desc:"Przerwa na jedzenie w okolicy Union Square",lat:40.7355,lng:-73.9910,tag:'food'},
+  {maps:"The High Line, New York",name:"High Line – 15:10",desc:"Wejście przy 23rd St. Metro C/E z 14th → 23rd (5 min)",lat:40.7480,lng:-74.0048},
+  {maps:"St. Patrick's Cathedral, 5th Ave, New York",name:"Katedra Św. Patryka – 16:30",desc:"5th Ave/50th St – neogotyk z 1878, bezpłatna. Metro N/R/W do 49th St (8 min)",lat:40.7585,lng:-73.9760},
+  {maps:"Professional Performing Arts School, 328 W 48th St, New York",name:"Hell's Kitchen + PPAS – 17:15",desc:"Dzielnica Alicii Keys + jej szkoła artystyczna Performing Arts School (328 W 48th St)",lat:40.7615,lng:-73.9910},
+  {maps:"Times Square, New York",name:"Kolacja przy Times Square – 17:45",desc:"Szybka kolacja przed spektaklem",lat:40.7580,lng:-73.9855,tag:'food'},
+  {maps:"Marquis Theatre, 210 W 46th St, New York",name:"Stranger Things: The First Shadow – 19:00",desc:"⭐ ZAREZERWOWANE! Marquis Theatre (210 W 46th St) – prequel Netflix z Tony Award! Hawkins 1959, efekty specjalne, ~2.5h",lat:40.7590,lng:-73.9860,tag:'reserved'},
+]},
+{label:"Dzień 4",date:"15.07",city:"Biblioteka + Muzeum + Harlem + Gospel",stops:[
+  {maps:"New York Public Library Main Branch, 476 5th Ave, New York",name:"New York Public Library – 9:10",desc:"5th Ave/42nd St – Rose Main Reading Room, bezpłatna. Metro 1 z 28th → 42nd (5 min)",lat:40.7532,lng:-73.9822},
+  {maps:"Bryant Park, New York",name:"Bryant Park – 9:55",desc:"Za biblioteką – leżaki, kawa na świeżym powietrzu, bezpłatny",lat:40.7536,lng:-73.9832},
+  {maps:"Grand Central Terminal, New York",name:"Grand Central Terminal – 10:28",desc:"8 min pieszo wzdłuż 42nd St – majestatyczna hala z 1913, Avengers + Gossip Girl!",lat:40.7527,lng:-73.9772},
+  {maps:"American Museum of Natural History, New York",name:"Museum of Natural History – 11:40",desc:"⭐ Zarezerwowane! Metro B/C do 81st St – dinozaury, kosmos, wieloryb (~$28/os, ~2h)",lat:40.7813,lng:-73.9740,tag:'reserved'},
+  {maps:"Columbus Ave & W 81st St, New York, NY",name:"Lunch – 13:30",desc:"Przerwa przed przejazdem do Harlemu",lat:40.7830,lng:-73.9710,tag:'food'},
+  {maps:"Sylvia's Restaurant, 328 Malcolm X Blvd, New York",name:"Sylvia's Restaurant – 16:00",desc:"328 Lenox Ave, Harlem – soul food od 1962, jadał tu Barack Obama! ~$20–30/os. Metro B/C do 125th St",lat:40.8087,lng:-73.9447,tag:'food'},
+  {maps:"420 W 145th St, New York, NY 10031",name:"Koncert Gospel – 17:30",desc:"⭐ ZAREZERWOWANE! 420 W 145th St – 1h prawdziwego Gospel w Harlemie",lat:40.8244,lng:-73.9440,tag:'reserved'},
+  {maps:"116th Street & Lenox Ave, New York, NY",name:"Harlem – 116th Street – 18:30",desc:"Okolica gdzie Alicia Keys spędzała czas u rodziny",lat:40.8022,lng:-73.9490},
+  {maps:"Apollo Theater, 253 W 125th St, New York",name:"Apollo Theater – 18:50",desc:"253 W 125th St – tu startowały Alicia Keys i Beyoncé. Lobby bezpłatne",lat:40.8098,lng:-73.9500},
+  {maps:"Marshalls, 620 Avenue of the Americas, New York",name:"Marshalls – zakupy wieczorne",desc:"620 6th Ave, 8 min od hotelu (do 21:30) – markowe ubrania 30–70% taniej! Metro A z 125th → 23rd (25 min)",lat:40.7420,lng:-73.9930,tag:'shop'},
+]},
+{label:"Dzień 5",date:"16.07",city:"Waszyngton DC – wycieczka zorganizowana",stops:[
+  {maps:"790 7th Ave, New York, NY 10019",name:"Zbiórka 7:00 – 790 7th Ave",desc:"Wyjazd z hotelu 6:30! Uber/Lyft ~12 min (~$12–15). Zorganizowana wycieczka do DC",lat:40.7647,lng:-73.9819,tag:'drive'},
+  {maps:"United States Capitol, Washington DC",name:"Capitol Building",desc:"Wzgórze Kapitolskie – zdjęcia z zewnątrz",lat:38.8899,lng:-77.0091},
+  {maps:"Lincoln Memorial, Washington DC",name:"Lincoln Memorial",desc:"Kultowy pomnik z przemowy MLK «I Have a Dream»",lat:38.8893,lng:-77.0502},
+  {maps:"Washington Monument, Washington DC",name:"Washington Monument",desc:"Obelisk 170m – symbol stolicy",lat:38.8895,lng:-77.0353},
+  {maps:"World War II Memorial, Washington DC",name:"WWII + Vietnam Veterans Memorial",desc:"Pomniki wojenne przy National Mall",lat:38.8894,lng:-77.0407},
+  {maps:"National Air and Space Museum, Washington DC",name:"Smithsonian Air & Space Museum",desc:"Rakiety, samoloty, misje Apollo – BEZPŁATNE!",lat:38.8882,lng:-77.0199},
+  {maps:"National Museum of Natural History, Washington DC",name:"Smithsonian Natural History",desc:"Dinozaury, diamenty – BEZPŁATNE! Powrót do NYC ok. 22:00",lat:38.8913,lng:-77.0261},
+]},
+{label:"Dzień 6",date:"17.07",city:"West Village + lot do Las Vegas",stops:[
+  {maps:"Well More Laundromat, 204 8th Ave, New York",name:"Well More Laundromat – 7:30",desc:"204 8th Ave, 6 min od hotelu – zostaw pranie, odbierz po powrocie",lat:40.7443,lng:-73.9997},
+  {maps:"Starbucks Reserve Roastery, 61 9th Ave, New York",name:"Starbucks Reserve Roastery – 10:08",desc:"61 9th Ave – flagowy sklep, palarnia na kilku piętrach, ekskluzywne napoje",lat:40.7420,lng:-74.0048,tag:'food'},
+  {maps:"Bleecker St & Christopher St, New York, NY",name:"Bleecker Street – 10:53",desc:"Greenwich Village – sklepy winylowe, boutiki",lat:40.7331,lng:-74.0036,tag:'shop'},
+  {maps:"Magnolia Bakery, 401 Bleecker St, New York",name:"Magnolia Bakery – 11:13",desc:"401 Bleecker St – cupcakes Carrie z Sex and the City (~$4/szt)",lat:40.7359,lng:-74.0048,tag:'food'},
+  {maps:"Crumbl, 280 Bleecker St, New York",name:"Crumbl Cookies",desc:"280 Bleecker St – gigantyczne ciasteczka, menu co tydzień inne (~$5/szt)",lat:40.7318,lng:-74.0033,tag:'food'},
+  {maps:"Rhythm Zero, 328 Bleecker St, New York",name:"Rhythm Zero Matcha",desc:"328 Bleecker St – sezonowe latte matcha (~$7–9)",lat:40.7340,lng:-74.0038,tag:'food'},
+  {maps:"Caffe Reggio, 119 MacDougal St, New York",name:"Caffe Reggio – 11:28",desc:"119 MacDougal St – najstarsza kawiarnia NYC od 1927, tu wynaleziono cappuccino w USA!",lat:40.7301,lng:-74.0004,tag:'food'},
+  {maps:"Washington Square Park, New York",name:"Washington Square Park – 12:00",desc:"Teledysk Taylor Swift «Welcome to New York», łuk triumfalny",lat:40.7308,lng:-73.9973},
+  {maps:"Electric Lady Studios, 52 W 8th St, New York",name:"Electric Lady Studios",desc:"52 W 8th St – studio Hendrixa, nagrywała tu Taylor Swift",lat:40.7327,lng:-73.9987},
+  {maps:"23 Cornelia St, New York, NY 10014",name:"155 Bank Street + Cornelia Street",desc:"Kamienica gdzie mieszkała Taylor Swift + ulica z jej piosenki «Cornelia Street»",lat:40.7377,lng:-74.0066},
+  {maps:"66 Perry St, New York, NY 10014",name:"Perry Street 64/66 – 12:20",desc:"Dom i schody Carrie Bradshaw z Sex and the City",lat:40.7355,lng:-74.0053},
+  {maps:"Joe's Pizza, 7 Carmine St, New York",name:"Joe's Pizza",desc:"7 Carmine St – legenda od 1975! Kawałek ~$4–5, jedz na stojąco jak nowojorczyk",lat:40.7305,lng:-74.0021,tag:'food'},
+  {maps:"90 Bedford St, New York, NY 10014",name:"90 Bedford Street – Friends",desc:"Budynek z Friends/Central Perk + Cherry Lane Theatre (38 Commerce St, grał tu Joey)",lat:40.7325,lng:-74.0055},
+  {maps:"Chelsea Market, 75 9th Ave, New York",name:"Chelsea Market – 13:15",desc:"75 9th Ave – hale targowe w dawnej fabryce Oreo, lunch przed lotem!",lat:40.7424,lng:-74.0060,tag:'food'},
+  {maps:"Madison Square Garden, New York",name:"MSG Tour – 14:15",desc:"⬜ Do kupienia! Madison Square Garden (~$120/os, ~1.5h) – kulisy hali NBA/NHL",lat:40.7505,lng:-73.9934},
+  {maps:"Well More Laundromat, 204 8th Ave, New York",name:"Odbiór prania + pakowanie – 15:55",desc:"Well More Laundromat – świeże ubrania, potem pakowanie i wymeldowanie 19:30",lat:40.7443,lng:-73.9997},
+  {maps:"Harry Reid International Airport, Las Vegas",name:"JFK → Las Vegas – lot 21:00",desc:"Taxi/Uber na JFK ~19:45 (~$45–60). Lot ~5.5h. Nocleg: Trump International Hotel",lat:36.0840,lng:-115.1537,tag:'flight'},
+]},
+{label:"Dzień 7",date:"18.07",city:"Las Vegas + Ed Sheeran",stops:[
+  {maps:"Alamo Rent A Car, Harry Reid International Airport, Las Vegas",name:"Odbiór auta Alamo – 10:00",desc:"Wynajem SUV (lotnisko LAS), zwrot w San Francisco 27.07 – ZAREZERWOWANE",lat:36.0840,lng:-115.1537,tag:'drive'},
+  {maps:"Fountains of Bellagio, Las Vegas",name:"Fontanny Bellagio",desc:"Co 30 min – bezpłatny spektakl wody i muzyki!",lat:36.1126,lng:-115.1767},
+  {maps:"The Venetian Resort Las Vegas",name:"Venetian – Grand Canal",desc:"Kanały weneckie z gondolami wewnątrz hotelu",lat:36.1212,lng:-115.1697},
+  {maps:"Luxor Hotel & Casino, Las Vegas",name:"Piramida Luxor",desc:"Ikoniczny hotel-piramida ze snopem światła",lat:36.0955,lng:-115.1761},
+  {maps:"The High Roller, Las Vegas",name:"High Roller",desc:"~$25/os – największe koło obserwacyjne w USA (167m)",lat:36.1173,lng:-115.1682},
+  {maps:"Las Vegas North Premium Outlets, 875 S Grand Central Pkwy, Las Vegas",name:"Las Vegas North Premium Outlets",desc:"875 S Grand Central Pkwy – rabaty 30–70%! Nike, Levi's, Ralph Lauren",lat:36.1747,lng:-115.1573,tag:'shop'},
+  {maps:"Allegiant Stadium, Las Vegas",name:"Ed Sheeran LOOP Tour – 17:30",desc:"⭐ ZAREZERWOWANE! Allegiant Stadium – koncert na żywo!",lat:36.0909,lng:-115.1833,tag:'reserved'},
+]},
+{label:"Dzień 8",date:"19.07",city:"Hoover Dam + Valley of Fire → Page AZ",stops:[
+  {maps:"Las Vegas Strip, Las Vegas",name:"Wyjazd 7:00!",desc:"Kierunek Hoover Dam – ok. 45 min jazdy",lat:36.1699,lng:-115.1398,tag:'drive'},
+  {maps:"Hoover Dam, Nevada",name:"Hoover Dam",desc:"Spacer po szczycie tamy BEZPŁATNY – widoki na rzekę Kolorado",lat:36.0161,lng:-114.7377},
+  {maps:"Mike O'Callaghan–Pat Tillman Memorial Bridge, Nevada",name:"Pat Tillman Memorial Bridge",desc:"Bezpłatny parking – najlepszy widok na całą tamę z góry! (~10 min)",lat:36.0124,lng:-114.7411},
+  {maps:"Valley of Fire State Park, Nevada",name:"Valley of Fire State Park",desc:"Niesamowite czerwone skały ($15/auto) – po drodze do Page",lat:36.4841,lng:-114.5327},
+  {maps:"Holiday Inn Express Page Lake Powell, Page, Arizona",name:"Holiday Inn Express Page Lake Powell",desc:"Nocleg 19–21.07. Przejazd ~4.5h przez pustynię. Baza pod Kanion Antylopy",lat:36.9147,lng:-111.4558,tag:'hotel'},
+]},
+{label:"Dzień 9",date:"20.07",city:"Antelope Canyon + Horseshoe Bend",stops:[
+  {maps:"Upper Antelope Canyon, Page, Arizona",name:"Kanion Antylopy Upper – tour 10:00",desc:"⭐ ZAREZERWOWANE! Przewodnik Navajo, najpiękniejsze promienie słońca!",lat:36.8619,lng:-111.3743,tag:'reserved'},
+  {maps:"Page, Arizona",name:"Lunch w Page",desc:"Lokalne restauracje – burgery, tacos (~$10–15/os)",lat:36.9147,lng:-111.4558,tag:'food'},
+  {maps:"Horseshoe Bend, Page, Arizona",name:"Horseshoe Bend",desc:"15 min spacer – widok na zakole rzeki Kolorado z klifu ($10/auto)",lat:36.8791,lng:-111.5104},
+  {maps:"Holiday Inn Express Page Lake Powell, Page, Arizona",name:"Nocleg w Page",desc:"Holiday Inn Express – druga noc. Jutro Grand Canyon!",lat:36.9147,lng:-111.4558,tag:'hotel'},
+]},
+{label:"Dzień 10",date:"21.07",city:"Grand Canyon South Rim",stops:[
+  {maps:"Grand Canyon Village, Arizona",name:"Przejazd Page → Grand Canyon",desc:"2.5h jazdy. Wjazd na America the Beautiful Pass (kupiony!)",lat:36.9147,lng:-111.4558,tag:'drive'},
+  {maps:"Mather Point, Grand Canyon",name:"Mather Point",desc:"Pierwszy widok na kanion – zapiera dech!",lat:36.0616,lng:-112.1078},
+  {maps:"Bright Angel Trailhead, Grand Canyon",name:"Bright Angel Trail",desc:"Zejdź MAX 1.5h w dół i wróć – NIE głębiej, 48°C!",lat:36.0578,lng:-112.1438},
+  {maps:"Desert View Drive, Grand Canyon",name:"Desert View Drive",desc:"40 km trasa wzdłuż krawędzi – zatrzymuj się przy punktach widokowych",lat:36.0400,lng:-111.9600},
+  {maps:"Desert View Watchtower, Grand Canyon",name:"Desert View Watchtower",desc:"Ukryty klejnot – widok z wieży bardziej zapiera dech niż Mather Point!",lat:36.0439,lng:-111.8261},
+  {maps:"Grand Hotel at the Grand Canyon, Tusayan, Arizona",name:"Grand Canyon Hotel & Suites",desc:"226 Highway 64, Tusayan AZ. Nocleg 21–22.07",lat:35.9736,lng:-112.1256,tag:'hotel'},
+]},
+{label:"Dzień 11",date:"22.07",city:"Wschód słońca GC + Sedona → Los Angeles",stops:[
+  {maps:"Mather Point, Grand Canyon",name:"Wschód słońca nad Grand Canyon – 5:30!",desc:"Wstać o 5:00! Mather Point – jedno z najpiękniejszych widowisk świata. Złote światło, cisza, zero tłumu",lat:36.0616,lng:-112.1078},
+  {maps:"Cathedral Rock, Sedona, Arizona",name:"Sedona – Cathedral Rock",desc:"2h jazdy. Czerwone skały, 2h stop",lat:34.8197,lng:-111.7920},
+  {maps:"Los Angeles, California",name:"Przejazd Sedona → Los Angeles",desc:"~3.5h jazdy (~480 km) przez pustynię Mojave. Zatankuj do pełna przed Kalifornią!",lat:34.0522,lng:-118.2437,tag:'drive'},
+  {maps:"Hollywood Celebrity Hotel, 1775 Orchid Ave, Los Angeles",name:"Hollywood Celebrity Hotel",desc:"1775 Orchid Ave. Zameldowanie 22–25.07",lat:34.1030,lng:-118.3387,tag:'hotel'},
+]},
+{label:"Dzień 12",date:"23.07",city:"Los Angeles – Venice, Hollywood, Griffith",stops:[
+  {maps:"Venice Beach, California",name:"Venice Beach – rano",desc:"Mniej tłumów, lepsze zdjęcia! Skaters, street art, murale",lat:33.9850,lng:-118.4695},
+  {maps:"Hollywood Walk of Fame, Los Angeles",name:"Hollywood Walk of Fame",desc:"Gwiazdy na chodniku, Chinese Theatre",lat:34.1016,lng:-118.3269},
+  {maps:"Tupac Mural, La Brea Ave, Los Angeles",name:"Mural 2Paca",desc:"La Brea Ave – kultowy mural. Uber ~8 min",lat:34.0834,lng:-118.3446},
+  {maps:"Melrose Ave & N Fairfax Ave, Los Angeles, CA",name:"Mural Olivii Rodrigo",desc:"Melrose Ave – ogłoszenie albumu YSPSFGSL. Pieszo 15 min",lat:34.0838,lng:-118.3614},
+  {maps:"Paul Smith Pink Wall, 8221 Melrose Ave, Los Angeles",name:"Paul Smith Pink Wall",desc:"8221 Melrose Ave – kultowa różowa ściana, zdjęcie obowiązkowe! Pieszo 5 min",lat:34.0836,lng:-118.3690},
+  {maps:"The Grove, Los Angeles",name:"The Grove",desc:"Nordstrom z Jellycat, fontanna, bywa Taylor Swift. Lunch i zakupy!",lat:34.0721,lng:-118.3574,tag:'shop'},
+  {maps:"Santa Monica Pier, California",name:"Santa Monica Pier",desc:"Pacyfik, kolejki, molo – klasyk LA",lat:34.0083,lng:-118.4980},
+  {maps:"Griffith Observatory, Los Angeles",name:"Griffith Observatory – wieczorem!",desc:"Widok na rozświetlone LA + podświetlony Hollywood Sign. Bezpłatne, niezapomniane!",lat:34.1184,lng:-118.3004},
+]},
+{label:"Dzień 13",date:"24.07",city:"Universal Studios Hollywood",stops:[
+  {maps:"Universal Studios Hollywood, California",name:"Universal Studios – cały dzień 10:00–21:00",desc:"⭐ ZAREZERWOWANE (attractiontickets.com). Bilety ~$109–130/os",lat:34.1381,lng:-118.3534,tag:'reserved'},
+  {maps:"The Wizarding World of Harry Potter, Universal Studios Hollywood",name:"Wizarding World of Harry Potter",desc:"Hogsmeade, zamek, butterbeer – magia!",lat:34.1381,lng:-118.3534},
+  {maps:"Universal Studios Hollywood, California",name:"Jurassic World + Studio Tour",desc:"Najlepsze atrakcje + kulisy prawdziwej wytwórni (King Kong 360, Psycho, Jaws)",lat:34.1381,lng:-118.3534},
+  {maps:"Universal Studios Hollywood, California",name:"⚠️ Express Pass – rozważ!",desc:"$60–90/os extra – lipiec to ogromne kolejki, oszczędza 3–4h czekania!",lat:34.1381,lng:-118.3534},
+]},
+{label:"Dzień 14",date:"25.07",city:"Kings Canyon + Sequoia NP",stops:[
+  {maps:"Kings Canyon National Park, California",name:"Przejazd LA → Kings Canyon",desc:"4h jazdy. Wjazd na tej samej przepustce co Sequoia!",lat:36.7878,lng:-118.5850,tag:'drive'},
+  {maps:"Cedar Grove, Kings Canyon National Park",name:"Kings Canyon – Cedar Grove",desc:"Zumwalt Meadow – granitowy kanion, jeden z najgłębszych w USA",lat:36.7942,lng:-118.5989},
+  {maps:"General Sherman Tree, Sequoia National Park",name:"General Sherman Tree",desc:"Największe drzewo Ziemi – 84m, 3000 lat, 2000 ton!",lat:36.5819,lng:-118.7511},
+  {maps:"Congress Trail, Sequoia National Park",name:"Congress Trail",desc:"3 km pętla wśród gigantów – łatwa dla dzieci",lat:36.5800,lng:-118.7490},
+  {maps:"Moro Rock, Sequoia National Park",name:"Moro Rock",desc:"350 schodków – panorama Sierra Nevada. Przyjemne ~22°C!",lat:36.5453,lng:-118.7658},
+  {maps:"La Quinta Inn & Suites Visalia Sequoia Gateway, Visalia, California",name:"La Quinta Visalia/Sequoia Gateway",desc:"Nocleg 25–26.07. Zjazd z gór do doliny",lat:36.3302,lng:-119.2921,tag:'hotel'},
+]},
+{label:"Dzień 15",date:"26.07",city:"Yosemite – Dolina (Dzień 1)",stops:[
+  {maps:"Visalia, California",name:"Wyjazd z Visalia 5:30!",desc:"Wjazd przed 7:00 = puste drogi, złote światło. Brak timed entry permit w 2026 – wjazd swobodnie!",lat:36.3302,lng:-119.2921,tag:'drive'},
+  {maps:"Tunnel View, Yosemite National Park",name:"Tunnel View o wschodzie",desc:"Jedno z najpiękniejszych zdjęć świata z idealnym światłem",lat:37.7156,lng:-119.6770},
+  {maps:"El Capitan, Yosemite National Park",name:"El Capitan",desc:"900m pionowa granitowa ściana – Free Solo! Wypatruj wspinaczy",lat:37.7340,lng:-119.6378},
+  {maps:"Bridalveil Fall, Yosemite National Park",name:"Bridalveil Fall",desc:"Wodospad 188m – 15 min spacer",lat:37.7169,lng:-119.6466},
+  {maps:"Mirror Lake, Yosemite National Park",name:"Mirror Lake Trail",desc:"8 km – odbicie Half Dome w tafli jeziora",lat:37.7490,lng:-119.5560},
+  {maps:"Yosemite View Lodge, 11136 CA-140, El Portal, California",name:"Yosemite View Lodge",desc:"11136 CA-140, El Portal. Nocleg 26–27.07",lat:37.6773,lng:-119.7734,tag:'hotel'},
+]},
+{label:"Dzień 16",date:"27.07",city:"Yosemite Dzień 2 → San Francisco",stops:[
+  {maps:"Mist Trail, Yosemite National Park",name:"Mist Trail – start przed 8:00!",desc:"Do Vernal Fall (6 km) – najlepszy szlak dla rodzin. Weź pelerynę – mokro i spektakularnie!",lat:37.7275,lng:-119.5581},
+  {maps:"Glacier Point, Yosemite National Park",name:"Glacier Point",desc:"2200m n.p.m. – widok Z GÓRY na Half Dome. WOW moment całej podróży!",lat:37.7281,lng:-119.5733},
+  {maps:"Mariposa Grove of Giant Sequoias, Yosemite National Park",name:"Mariposa Grove",desc:"Aleja sekwoi przy wyjeździe z parku",lat:37.5142,lng:-119.6036},
+  {maps:"Alamo Rent A Car, 750 Bush St, San Francisco",name:"Oddaj auto – Alamo O'Farrell St",desc:"~3.5h jazdy. Zwrot auta w centrum SF przed wjazdem do miasta!",lat:37.7864,lng:-122.4144,tag:'drive'},
+  {maps:"Hotel Zephyr, 250 Beach St, San Francisco",name:"Hotel Zephyr",desc:"250 Beach Street, Fisherman's Wharf. Nocleg 27–29.07",lat:37.8080,lng:-122.4177,tag:'hotel'},
+]},
+{label:"Dzień 17",date:"28.07",city:"San Francisco – Golden Gate + Sausalito + Wharf",stops:[
+  {maps:"Blazing Saddles Bike Rentals, 2715 Hyde St, San Francisco",name:"Rower Blazing Saddles",desc:"2715 Hyde St – wypożyczalnia rowerów na przejazd przez most",lat:37.8060,lng:-122.4210},
+  {maps:"Golden Gate Bridge, San Francisco",name:"Golden Gate Bridge",desc:"Przejazd rowerem przez most (1.6 km) – epicki widok!",lat:37.8199,lng:-122.4783},
+  {maps:"Sausalito, California",name:"Sausalito",desc:"Spacer Bridgeway Promenade, houseboats. Prom z powrotem do SF (~$10/os)",lat:37.8591,lng:-122.4853},
+  {maps:"Fisherman's Wharf, San Francisco",name:"Fisherman's Wharf – lunch",desc:"Clam chowder w chlebie sourdough – Boudin Bakery (~$12–15/os). Obowiązkowe!",lat:37.8080,lng:-122.4177,tag:'food'},
+  {maps:"Pier 39, San Francisco",name:"Pier 39 – lwy morskie",desc:"Bezpłatne – dzieci zachwycone!",lat:37.8087,lng:-122.4098},
+  {maps:"Ghirardelli Square, San Francisco",name:"Ghirardelli Square",desc:"Kultowa czekolada SF, lody, sundae (~$8–12/os)",lat:37.8057,lng:-122.4229,tag:'food'},
+  {maps:"Lombard Street (Crookedest Street), San Francisco, CA",name:"Cable Cars + Lombard Street",desc:"Zabytkowe tramwaje + najbardziej kręta ulica świata",lat:37.8021,lng:-122.4187},
+  {maps:"Baker Beach, San Francisco",name:"Baker Beach – zachód słońca",desc:"Widok na Golden Gate o zachodzie – bezpłatne, spektakularne!",lat:37.7936,lng:-122.4833},
+]},
+{label:"Dzień 18",date:"29.07",city:"SF – Chinatown, Mission + lot do Polski",stops:[
+  {maps:"Chinatown, San Francisco",name:"Chinatown – dim sum na śniadanie",desc:"Grant Ave – har gow, siu mai, bao (~$10–15/os), 10 min od hotelu",lat:37.7941,lng:-122.4078,tag:'food'},
+  {maps:"La Taqueria, 2889 Mission St, San Francisco",name:"Mission District – La Taqueria",desc:"2889 Mission St – najlepsze burrito w mieście (od 1973!) + murale Chicano",lat:37.7509,lng:-122.4184,tag:'food'},
+  {maps:"Union Square, San Francisco",name:"Union Square – zakupy",desc:"Macy's (170 O'Farrell, do 20:00), Zara (250 Post St), Urban Outfitters (80 Powell), Sephora (33 Powell)",lat:37.7880,lng:-122.4074,tag:'shop'},
+  {maps:"San Francisco International Airport",name:"BART na lotnisko SFO",desc:"$10/os, 30 min – przyjedź 3h przed lotem!",lat:37.6213,lng:-122.3790,tag:'drive'},
+  {maps:"San Francisco International Airport",name:"Lot nocny do Polski",desc:"SFO → przesiadka w Europie → PL (~11–13h)",lat:37.6213,lng:-122.3790,tag:'flight'},
+]},
+{label:"Dzień 19",date:"30.07",city:"Lądowanie w Polsce",stops:[
+  {maps:"Kraków Airport, Balice",name:"Powrót do Polski",desc:"Lot z przesiadką ~11–13h. Koniec niesamowitej przygody! 🎉",lat:50.0647,lng:19.9450,tag:'flight'},
+]},
+];
+
+/* ═══ PERSISTENCE ═══ */
+const deepClone = (typeof structuredClone==='function')
+  ? (o)=>structuredClone(o)
+  : (o)=>JSON.parse(JSON.stringify(o));
+const STORE_KEY='usa26v3-plan';      // committed (świadomie zapisane)
+const DRAFT_KEY='usa26v3-draft';     // auto-kopia robocza (żeby nic nie zginęło)
+const SET_KEY='usa26v3-settings';
+let days, dirty=false;
+
+function loadPlan(){
+  try{
+    const draft=localStorage.getItem(DRAFT_KEY);
+    const saved=localStorage.getItem(STORE_KEY);
+    if(draft){ days=JSON.parse(draft); dirty=(draft!==saved); return; }
+    if(saved){ days=JSON.parse(saved); dirty=false; return; }
+  }catch(e){}
+  days=deepClone(DAYS_ORIGINAL); dirty=false;
+}
+// auto-draft on every edit — nic nie ginie nawet bez „Zapisz"
+function savePlan(){
+  try{ localStorage.setItem(DRAFT_KEY, JSON.stringify(days)); }catch(e){}
+  dirty=true; updateSaveStatus();
+}
+// świadomy zapis „na stałe"
+function commitPlan(){
+  try{
+    const json=JSON.stringify(days);
+    localStorage.setItem(STORE_KEY, json);
+    localStorage.setItem(DRAFT_KEY, json);
+  }catch(e){}
+  dirty=false; updateSaveStatus();
+}
+function resetPlan(){
+  days=deepClone(DAYS_ORIGINAL);
+  try{ localStorage.removeItem(STORE_KEY); localStorage.removeItem(DRAFT_KEY); }catch(e){}
+  dirty=false; updateSaveStatus();
+}
+function hasSavedData(){
+  try{ return !!(localStorage.getItem(STORE_KEY)||localStorage.getItem(DRAFT_KEY)); }catch(e){ return false; }
+}
+loadPlan();
+
+/* ═══ SETTINGS ═══ */
+const DEFAULT_SETTINGS={theme:'dark', photos:true, anim:true, swipe:true, autoToday:true, weather:true};
+let settings=loadSettings();
+function loadSettings(){
+  try{
+    const s=localStorage.getItem(SET_KEY);
+    if(s) return Object.assign({}, DEFAULT_SETTINGS, JSON.parse(s));
+  }catch(e){}
+  return {...DEFAULT_SETTINGS};
+}
+function saveSettings(){
+  try{ localStorage.setItem(SET_KEY, JSON.stringify(settings)); }catch(e){}
+}
+function applySettings(){
+  const html=document.documentElement;
+  html.setAttribute('data-theme', settings.theme);
+  html.classList.toggle('no-anim', !settings.anim);
+  html.classList.toggle('no-photos', !settings.photos);
+  const meta=document.getElementById('metaTheme');
+  if(meta) meta.setAttribute('content', settings.theme==='dark'?'#070a12':'#eef0f5');
+  const tb=document.getElementById('tbtn'); if(tb) tb.textContent = settings.theme==='dark'?'☾':'☀';
+}
+
+/* ═══ PHOTOS — verified Wikimedia Commons files ═══ */
+const FP='https://commons.wikimedia.org/wiki/Special:FilePath/';
+const IMG={
+  nyc:   {u:FP+'New_york_times_square-terabass.jpg?width=1300', p:'Times Square, NYC'},
+  dc:    {u:FP+'US_Capitol_west_side.JPG?width=1300', p:'Kapitol, Waszyngton'},
+  vegas: {u:FP+'Las_Vegas_Strip_lights_at_night.jpg?width=1300', p:'Las Vegas Strip'},
+  ant:   {u:FP+'USA_Antelope-Canyon.jpg?width=1100', p:'Antelope Canyon'},
+  gc:    {u:FP+'0427_Grand_Canyon_Mather_Point_%285333623276%29.jpg?width=1300', p:'Grand Canyon'},
+  la:    {u:FP+'Hollywood_Sign.jpg?width=1300', p:'Hollywood, Los Angeles'},
+  yos:   {u:FP+'Tunnel_View,_Yosemite_Valley,_Yosemite_NP_-_Diliff.jpg?width=1300', p:'Yosemite, Tunnel View'},
+  gg:    {u:FP+'GoldenGateBridge-001.jpg?width=1300', p:'Golden Gate Bridge'},
+  baker: {u:FP+'Golden_Gate_Bridge_as_seen_at_twilight_from_Baker_Beach.jpg?width=1300', p:'Baker Beach, SF'},
+};
+/* per-day: photo key, accent color, fallback gradient, short chip name */
+const DAY_META=[
+  {img:'nyc',  acc:'#4f8ef7', grad:'linear-gradient(165deg,#0b1230 0%,#14224e 45%,#2a1a3e 100%)', short:'NYC ✈'},
+  {img:'nyc',  acc:'#60a5fa', grad:'linear-gradient(165deg,#0b1230 0%,#14224e 45%,#2a1a3e 100%)', short:'Manhattan'},
+  {img:'nyc',  acc:'#818cf8', grad:'linear-gradient(165deg,#0b1230 0%,#14224e 45%,#2a1a3e 100%)', short:'Central Park'},
+  {img:'nyc',  acc:'#a78bfa', grad:'linear-gradient(165deg,#0b1230 0%,#14224e 45%,#2a1a3e 100%)', short:'Harlem'},
+  {img:'dc',   acc:'#94a3b8', grad:'linear-gradient(165deg,#101828 0%,#1e2a44 50%,#2e3a56 100%)', short:'Waszyngton'},
+  {img:'nyc',  acc:'#f87171', grad:'linear-gradient(165deg,#0b1230 0%,#14224e 45%,#3e1a2a 100%)', short:'NYC → LV ✈'},
+  {img:'vegas',acc:'#e879f9', grad:'linear-gradient(165deg,#180a28 0%,#2e1048 50%,#3e1038 100%)', short:'Las Vegas'},
+  {img:'vegas',acc:'#fb923c', grad:'linear-gradient(165deg,#1e0e20 0%,#3a1830 50%,#5e2410 100%)', short:'Hoover Dam'},
+  {img:'ant',  acc:'#fb923c', grad:'linear-gradient(165deg,#2a0e08 0%,#5e2410 50%,#8a3808 100%)', short:'Antelope'},
+  {img:'gc',   acc:'#f97316', grad:'linear-gradient(165deg,#1e0c08 0%,#4a1a0a 50%,#7a2e08 100%)', short:'Grand Canyon'},
+  {img:'gc',   acc:'#fbbf24', grad:'linear-gradient(165deg,#1e0c08 0%,#4a1a0a 50%,#7a2e08 100%)', short:'GC → LA'},
+  {img:'la',   acc:'#f472b6', grad:'linear-gradient(165deg,#1a0e20 0%,#3a1638 40%,#6a2848 100%)', short:'Los Angeles'},
+  {img:'la',   acc:'#c084fc', grad:'linear-gradient(165deg,#1a0e20 0%,#3a1638 40%,#6a2848 100%)', short:'Universal'},
+  {img:'yos',  acc:'#4ade80', grad:'linear-gradient(165deg,#0a1810 0%,#14301e 50%,#1e4028 100%)', short:'Sequoia'},
+  {img:'yos',  acc:'#34d399', grad:'linear-gradient(165deg,#0a1810 0%,#14301e 50%,#1e4028 100%)', short:'Yosemite'},
+  {img:'yos',  acc:'#2dd4bf', grad:'linear-gradient(165deg,#0a1810 0%,#14301e 50%,#1e4028 100%)', short:'Yos → SF'},
+  {img:'baker',acc:'#fb7185', grad:'linear-gradient(165deg,#101828 0%,#2a2038 50%,#5e2830 100%)', short:'San Francisco'},
+  {img:'gg',   acc:'#f43f5e', grad:'linear-gradient(165deg,#101828 0%,#2a2038 50%,#5e2830 100%)', short:'SF ✈'},
+  {img:'baker',acc:'#60a5fa', grad:'linear-gradient(165deg,#0b1230 0%,#1a2444 50%,#2a3458 100%)', short:'Polska 🎉'},
+];
+const TAG_MAP={
+  reserved:{cls:'st-reserved',lbl:'★ Zarezerwowane'},
+  hotel:{cls:'st-hotel',lbl:'Nocleg'},
+  drive:{cls:'st-drive',lbl:'Jazda'},
+  flight:{cls:'st-flight',lbl:'Lot'},
+  shop:{cls:'st-shop',lbl:'Zakupy'},
+  food:{cls:'st-food',lbl:'Jedzenie'},
+};
+
+let cur=0, bgActive=null, bgStandby=null, loadedPhotos={};
+let editMode=false, showHidden=false, lastDeleted=null, toastTimer=null;
+const TAG_ORDER=['reserved','hotel','drive','flight','shop','food'];
+
+/* ═══ URLS ═══ */
+/* Buduje czytelne zapytanie tekstowe do Map Google z nazwy przystanku
+   (+ ewentualny adres wyłuskany z opisu), żeby w Mapach pokazała się
+   nazwa miejsca, a nie surowe współrzędne. */
+function cleanName(s){
+  let n=(s.name||'').trim();
+  // usuń godziny na początku typu "19:20 "
+  n=n.replace(/^\s*\d{1,2}:\d{2}\s*/,'');
+  // usuń dopisek po myślniku: godzina lub słowo-akcja (– zameldowanie, – 19:20, – tour 10:00)
+  n=n.replace(/\s*[–-]\s*(?:\d{1,2}:\d{2}.*|zameldowanie.*|tour\b.*|start\b.*|wschód\b.*)$/i,'');
+  n=n.replace(/\s*⭐|\s*⚠️/g,'');
+  return n.trim();
+}
+function addressFromDesc(s){
+  const d=s.desc||'';
+  // wyłap fragment wyglądający jak adres: "140 W 24th St", "2889 Mission St", "5th Ave/50th St"
+  const m=d.match(/\b\d{1,5}\s+[A-Z0-9][A-Za-z0-9.\- ]*?(?:St|Street|Ave|Avenue|Blvd|Boulevard|Rd|Road|Pkwy|Highway|Hwy|Dr|Drive|Pl|Plaza|Broadway|Lane|Ln|Way)\b\.?/);
+  return m?m[0].trim():'';
+}
+function placeQuery(s){
+  // jeśli przystanek ma ręcznie przypisane, zweryfikowane zapytanie – użyj go
+  if(s.maps && s.maps.trim()) return s.maps.trim();
+  const name=cleanName(s);
+  const addr=addressFromDesc(s);
+  let q=name;
+  if(addr && !name.toLowerCase().includes(addr.toLowerCase())) q=`${name}, ${addr}`;
+  return q||`${s.lat},${s.lng}`;
+}
+// Kodowanie zapytania dla Map Google: spacje jako '+', reszta bezpiecznie.
+// Format ?q= jest najlepiej i najpewniej dekodowany (pokazuje nazwę, nie %20).
+function mapsEnc(q){
+  return encodeURIComponent(q).replace(/%20/g,'+');
+}
+function stopUrl(s){
+  const q=placeQuery(s);
+  return `https://www.google.com/maps?q=${mapsEnc(q)}`;
+}
+function routeUrl(allStops){
+  const stops=allStops.filter(s=>!s.hidden);
+  if(!stops.length)return'#';
+  if(stops.length===1)return stopUrl(stops[0]);
+  const enc=s=>mapsEnc(placeQuery(s));
+  const o=enc(stops[0]);
+  const d=enc(stops[stops.length-1]);
+  const wp=stops.slice(1,-1).slice(0,9).map(enc).join('|');
+  return `https://www.google.com/maps/dir/?api=1&origin=${o}&destination=${d}${wp?`&waypoints=${wp}`:''}`;
+}
+
+/* ═══ POGODA (Open-Meteo, bez klucza API, CORS OK) ═══ */
+const weatherCache={};
+function weatherIcon(code){
+  if(code==null) return '';
+  if(code===0) return '☀️';
+  if(code<=2) return '🌤️';
+  if(code===3) return '☁️';
+  if(code<=48) return '🌫️';
+  if(code<=57) return '🌦️';
+  if(code<=67) return '🌧️';
+  if(code<=77) return '🌨️';
+  if(code<=82) return '🌦️';
+  if(code<=86) return '🌨️';
+  return '⛈️';
+}
+function fetchWeather(lat,lng){
+  const key=(Math.round(lat*50)/50)+','+(Math.round(lng*50)/50); // ~2km siatka → mniej zapytań
+  if(weatherCache[key]) return weatherCache[key];
+  weatherCache[key]=(async()=>{
+    try{
+      const url=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,weather_code&timezone=auto`;
+      const r=await fetch(url);
+      if(!r.ok) throw 0;
+      const j=await r.json();
+      const cur=j&&(j.current||j.current_weather);
+      if(cur){
+        const temp=(cur.temperature_2m!=null)?cur.temperature_2m:cur.temperature;
+        const code=(cur.weather_code!=null)?cur.weather_code:cur.weathercode;
+        if(typeof temp==='number') return {temp, code};
+      }
+      return null;
+    }catch(e){ return null; }
+  })();
+  return weatherCache[key];
+}
+function loadWeather(){
+  if(settings && settings.weather===false) return;
+  const d=days[cur];
+  const sheet=document.getElementById('sheet');
+  // pogoda w nagłówku – reprezentatywny (pierwszy widoczny) przystanek dnia
+  const heroStop=d.stops.find(s=>!s.hidden)||d.stops[0];
+  if(heroStop){
+    const hel=document.getElementById('heroWeather');
+    if(hel && !hel.innerHTML) hel.innerHTML='<span style="opacity:.5">&nbsp;·&nbsp;🌡️…</span>';
+    fetchWeather(heroStop.lat,heroStop.lng).then(w=>{
+      const el=document.getElementById('heroWeather');
+      if(el){ el.innerHTML = w ? `&nbsp;·&nbsp;${weatherIcon(w.code)} ${Math.round(w.temp)}°C` : ''; }
+    });
+  }
+  // pogoda przy każdym widocznym przystanku
+  if(!sheet) return;
+  d.stops.forEach((s,i)=>{
+    if(s.hidden) return;
+    fetchWeather(s.lat,s.lng).then(w=>{
+      const el=sheet.querySelector(`.stemp[data-wi="${i}"]`);
+      if(el&&w){ el.textContent=`${weatherIcon(w.code)} ${Math.round(w.temp)}°`; el.classList.add('has'); }
+    });
+  });
+}
+
+/* ═══ BACKGROUND PHOTO ═══ */
+function tryLoad(urls,cb){
+  if(!urls.length){cb(null);return}
+  const u=urls[0], img=new Image();
+  img.onload=()=>cb(u);
+  img.onerror=()=>tryLoad(urls.slice(1),cb);
+  img.src=u;
+}
+let hintShown=false;
+function showHint(){
+  if(hintShown||document.getElementById('netHint'))return;
+  hintShown=true;
+  const el=document.createElement('div');
+  el.id='netHint';
+  el.innerHTML='<span>📷 Zdjęcia tła wczytają się po otwarciu pliku w przeglądarce (Safari / Chrome)</span><b>×</b>';
+  el.querySelector('b').onclick=()=>el.remove();
+  document.body.appendChild(el);
+}
+function hideHint(){const e=document.getElementById('netHint'); if(e)e.remove();}
+function setDayBg(i){
+  const m=DAY_META[i], ph=IMG[m.img];
+  document.getElementById('bgFallback').style.background=m.grad;
+  document.documentElement.style.setProperty('--acc', m.acc);
+  const credit=document.getElementById('photoCredit');
+  // photos disabled → just gradient, no network, no credit
+  if(settings && settings.photos===false){
+    bgActive.style.opacity='0'; bgStandby.style.opacity='0';
+    if(credit) credit.style.display='none';
+    hideHint();
+    return;
+  }
+  // try scaled thumb, then original file as backup
+  tryLoad([ph.u, ph.u.split('?')[0]], ok=>{
+    const cr=document.getElementById('photoCredit');
+    if(ok){
+      loadedPhotos[m.img]=true;
+      bgStandby.style.backgroundImage=`url('${ok}')`;
+      bgStandby.style.opacity='1';
+      bgActive.style.opacity='0';
+      [bgActive,bgStandby]=[bgStandby,bgActive];
+      if(cr) cr.style.display='';
+      hideHint();
+    }else{
+      if(cr) cr.style.display='none';
+      showHint();
+    }
+  });
+  // preload next day's photo
+  const nx=DAY_META[(i+1)%days.length];
+  if(!loadedPhotos[nx.img]){ const p=new Image(); p.src=IMG[nx.img].u; }
+}
+
+/* ═══ RENDER ═══ */
+function tagHTML(t){
+  if(!t||!TAG_MAP[t])return'';
+  const m=TAG_MAP[t];
+  return `<span class="stag ${m.cls}">${m.lbl}</span>`;
+}
+function buildChips(){
+  const el=document.getElementById('chips');
+  days.forEach((d,i)=>{
+    const c=document.createElement('div');
+    c.className='chip'+(i===0?' active':'');
+    c.innerHTML=`<span class="n">${i+1}</span><span class="c">${DAY_META[i].short}</span>`;
+    c.addEventListener('click',()=>switchDay(i));
+    el.appendChild(c);
+  });
+}
+function rebuildChips(){
+  const el=document.getElementById('chips');
+  el.innerHTML='';
+  buildChips();
+  const act=el.children[cur];
+  document.querySelectorAll('.chip').forEach((c,j)=>c.classList.toggle('active',j===cur));
+}
+const ICON_CHEV='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>';
+const ICON_UP='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>';
+const ICON_DOWN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
+const ICON_TRASH='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
+const ICON_PLUS='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+const ICON_EDIT='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>';
+const ICON_CHECK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+const ICON_RESET='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>';
+const ICON_EYE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>';
+const ICON_EYEOFF='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+
+function renderProgress(d){
+  const visible=d.stops.filter(s=>!s.hidden);
+  const total=visible.length;
+  const done=visible.filter(s=>s.done).length;
+  const hiddenCount=d.stops.length-total;
+  const pct=total? Math.round(done/total*100):0;
+  const allDone=total>0 && done===total;
+  return `<div class="day-prog">
+    <div class="dp-top">
+      <span class="dp-label">${allDone?'🎉 Wszystko zrobione!':`Zrobione ${done}/${total}`}</span>
+      <div class="dp-actions">
+        ${hiddenCount>0?`<button class="dp-btn" id="toggleHidden">${showHidden?'Ukryj schowane':`Pokaż ukryte (${hiddenCount})`}</button>`:''}
+        ${done>0?`<button class="dp-btn" id="clearDone">Odznacz wszystkie</button>`:''}
+      </div>
+    </div>
+    <div class="dp-bar"><div class="dp-fill" style="width:${pct}%"></div></div>
+  </div>`;
+}
+
+function renderDay(){
+  const d=days[cur], m=DAY_META[cur], ph=IMG[m.img];
+  document.getElementById('dayPill').textContent=`Dzień ${cur+1}/${days.length}`;
+  let h=`
+  <section class="hero">
+    <div class="photo-credit" id="photoCredit" style="${loadedPhotos[m.img]?'':'display:none'}">📍 ${ph.p} · Wikimedia</div>
+    <div class="hero-date"><span class="dot"></span>${d.date} · Lipiec 2026<span class="hero-weather" id="heroWeather"></span></div>
+    <h1 class="hero-title">${d.city}</h1>
+    <div class="hero-row">
+      <div class="hero-chips">
+        <span class="hchip">${d.stops.filter(s=>!s.hidden).length} przystanków</span>
+        <span class="hchip">${d.label}</span>
+      </div>
+      <a class="btn-go" href="${routeUrl(d.stops)}" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+        Trasa dnia
+      </a>
+    </div>
+  </section>
+  <section class="sheet${editMode?' editing':''}${showHidden?' show-hidden':''}" id="sheet">
+    <div class="grab"></div>
+    <div class="sheet-head">
+      <h2>Plan dnia</h2>
+      <div class="sheet-actions">
+        ${editMode?`<button class="mini-btn" id="saveInline">💾 Zapisz</button>`:''}
+        <button class="mini-btn${editMode?' on':''}" id="editBtn">${editMode?ICON_CHECK+' Gotowe':ICON_EDIT+' Edytuj'}</button>
+      </div>
+    </div>
+    ${renderProgress(d)}
+    <div class="edit-hint">✋ Przytrzymaj i <b>przeciągnij</b> szary uchwyt ⠿ w górę/dół, żeby zmienić kolejność. Tapnij nazwę lub opis, żeby edytować. <b>🙈</b> ukrywa punkt (bez usuwania). Dodaj własny przystanek na dole. <b>💾 Zapisz</b> utrwala zmiany na tym urządzeniu.</div>`;
+
+  d.stops.forEach((s,i)=>{
+    const tagPicker=TAG_ORDER.map(t=>`<span class="tag-opt t-${t} ${s.tag===t?'sel':''}" data-tag="${t}">${TAG_MAP[t].lbl.replace('★ ','')}</span>`).join('');
+    const cls=['stop'];
+    if(s.done) cls.push('done');
+    if(s.hidden) cls.push('hidden');
+    h+=`<a class="${cls.join(' ')}" data-i="${i}" href="${stopUrl(s)}" target="_blank" rel="noopener" style="animation-delay:${Math.min(i*40,460)}ms">
+      ${editMode
+        ? `<div class="snum" data-handle="${i}"><span>${i+1}</span></div>`
+        : `<button class="scheck ${s.done?'on':''}" data-check="${i}" aria-label="Zrobione">${s.done?ICON_CHECK:''}</button>`}
+      <div class="sbody">
+        <div class="tag-picker" data-tp="${i}">${tagPicker}</div>
+        ${!editMode?tagHTML(s.tag):''}
+        <div class="sname" ${editMode?'contenteditable="true" data-field="name" data-i="'+i+'"':''}>${s.name}${s.hidden&&!editMode?' <span class="hidden-badge">ukryte</span>':''}${editMode?'':`<span class="stemp" data-wi="${i}"></span>`}</div>
+        <div class="sdesc" ${editMode?'contenteditable="true" data-field="desc" data-i="'+i+'"':''}>${s.desc}</div>
+        <div class="coord-row">
+          <span class="coord-lbl">📍</span>
+          <input class="coord-inp" data-lat="${i}" value="${s.lat}" inputmode="decimal" placeholder="szer.">
+          <input class="coord-inp" data-lng="${i}" value="${s.lng}" inputmode="decimal" placeholder="dług.">
+          <span class="coord-hint">Nie znasz współrzędnych? Wklej tu współrzędne z Map Google (np. 40.71, -74.00) w pole szer., a rozdzielą się same. Albo zostaw — trasa użyje sąsiednich punktów.</span>
+        </div>
+      </div>
+      <div class="edit-ctrls">
+        <button class="ec-btn" data-up="${i}" ${i===0?'disabled':''} aria-label="W górę">${ICON_UP}</button>
+        <button class="ec-btn" data-down="${i}" ${i===d.stops.length-1?'disabled':''} aria-label="W dół">${ICON_DOWN}</button>
+        <button class="ec-btn hide" data-hide="${i}" aria-label="${s.hidden?'Pokaż':'Ukryj'}">${s.hidden?ICON_EYE:ICON_EYEOFF}</button>
+        <button class="ec-btn del" data-del="${i}" aria-label="Usuń">${ICON_TRASH}</button>
+      </div>
+      ${editMode?'':`<button class="shide-btn" data-hidetoggle="${i}" aria-label="Ukryj/pokaż">${s.hidden?ICON_EYE:ICON_EYEOFF}</button>`}
+      <div class="schev">${ICON_CHEV}</div>
+    </a>`;
+  });
+
+  h+=`<button class="add-stop" id="addStop">${ICON_PLUS} Dodaj własny przystanek</button>
+  <div class="reset-row"><button class="reset-btn" id="resetBtn">${ICON_RESET} Przywróć oryginalny plan</button></div>
+  <div class="endcap"><span class="flag">🇺🇸</span>${d.date} · Dzień ${cur+1} z ${days.length}<br><span style="opacity:.5;font-size:.9em">wersja ${APP_VERSION}</span></div>
+  </section>`;
+
+  const c=document.getElementById('content');
+  c.innerHTML=h;
+  wireEditHandlers();
+  requestAnimationFrame(()=>{ c.querySelectorAll('.stop').forEach(s=>s.classList.add('rv')); });
+  loadWeather();
+}
+
+/* ═══ EDIT HANDLERS ═══ */
+function wireEditHandlers(){
+  const sheet=document.getElementById('sheet');
+  if(!sheet)return;
+
+  // toggle edit mode
+  const eb=document.getElementById('editBtn');
+  if(eb) eb.onclick=(e)=>{ e.preventDefault(); e.stopPropagation(); editMode=!editMode; renderDay(); };
+
+  // inline save
+  const si=document.getElementById('saveInline');
+  if(si) si.onclick=(e)=>{ e.preventDefault(); e.stopPropagation(); commitPlan(); showToast('Zapisano ✓ Zostanie po zamknięciu'); };
+
+  const d=days[cur];
+
+  // progress controls (both modes)
+  const th=document.getElementById('toggleHidden');
+  if(th) th.onclick=(e)=>{ e.preventDefault(); e.stopPropagation(); showHidden=!showHidden; renderDay(); };
+  const cd=document.getElementById('clearDone');
+  if(cd) cd.onclick=(e)=>{ e.preventDefault(); e.stopPropagation(); d.stops.forEach(s=>s.done=false); savePlan(); renderDay(); };
+
+  if(!editMode){
+    // VIEW MODE: checkbox toggles done, hide button toggles hidden, tap card navigates
+    sheet.querySelectorAll('[data-check]').forEach(b=>{
+      b.addEventListener('click',ev=>{
+        ev.preventDefault(); ev.stopPropagation();
+        const i=+b.dataset.check;
+        d.stops[i].done=!d.stops[i].done;
+        savePlan(); renderDay();
+      });
+    });
+    sheet.querySelectorAll('[data-hidetoggle]').forEach(b=>{
+      b.addEventListener('click',ev=>{
+        ev.preventDefault(); ev.stopPropagation();
+        const i=+b.dataset.hidetoggle;
+        d.stops[i].hidden=!d.stops[i].hidden;
+        savePlan(); renderDay();
+      });
+    });
+    return;
+  }
+
+  // block navigation while editing
+  sheet.querySelectorAll('.stop').forEach(a=>{
+    a.addEventListener('click',ev=>{
+      if(editMode){ ev.preventDefault(); }
+    });
+  });
+
+  // reorder buttons
+  sheet.querySelectorAll('[data-up]').forEach(b=>b.onclick=e=>{e.preventDefault();e.stopPropagation();moveStop(+b.dataset.up,-1);});
+  sheet.querySelectorAll('[data-down]').forEach(b=>b.onclick=e=>{e.preventDefault();e.stopPropagation();moveStop(+b.dataset.down,1);});
+  // delete
+  sheet.querySelectorAll('[data-del]').forEach(b=>b.onclick=e=>{e.preventDefault();e.stopPropagation();deleteStop(+b.dataset.del);});
+  // hide / show (edit mode)
+  sheet.querySelectorAll('[data-hide]').forEach(b=>b.onclick=e=>{
+    e.preventDefault(); e.stopPropagation();
+    const i=+b.dataset.hide;
+    d.stops[i].hidden=!d.stops[i].hidden;
+    savePlan(); renderDay();
+  });
+  // add
+  const as=document.getElementById('addStop');
+  if(as) as.onclick=e=>{e.preventDefault();e.stopPropagation();addStop();};
+
+  // editable text
+  sheet.querySelectorAll('[contenteditable]').forEach(el=>{
+    el.addEventListener('click',ev=>ev.preventDefault());
+    el.addEventListener('blur',()=>{
+      const i=+el.dataset.i, f=el.dataset.field;
+      const val=el.textContent.trim();
+      if(f==='name'){ d.stops[i].name = val||'(bez nazwy)'; }
+      else{ d.stops[i].desc = val; }
+      savePlan();
+    });
+    el.addEventListener('keydown',ev=>{ if(ev.key==='Enter'&&el.dataset.field==='name'){ ev.preventDefault(); el.blur(); } });
+  });
+
+  // tag picker
+  sheet.querySelectorAll('.tag-opt').forEach(opt=>{
+    opt.addEventListener('click',ev=>{
+      ev.preventDefault(); ev.stopPropagation();
+      const wrap=opt.closest('.tag-picker'); const i=+wrap.dataset.tp; const t=opt.dataset.tag;
+      d.stops[i].tag = (d.stops[i].tag===t)?undefined:t;
+      savePlan();
+      wrap.querySelectorAll('.tag-opt').forEach(o=>o.classList.toggle('sel', o.dataset.tag===d.stops[i].tag));
+    });
+  });
+
+  // coordinate inputs
+  sheet.querySelectorAll('[data-lat]').forEach(inp=>{
+    inp.addEventListener('click',ev=>ev.stopPropagation());
+    inp.addEventListener('change',()=>{
+      const i=+inp.dataset.lat;
+      const raw=inp.value.trim();
+      // allow pasting "40.71, -74.00" into the lat box → split into both
+      const m=raw.match(/(-?\d+\.?\d*)[,\s]+(-?\d+\.?\d*)/);
+      if(m){
+        d.stops[i].lat=parseFloat(m[1]); d.stops[i].lng=parseFloat(m[2]);
+        renderDay(); return;
+      }
+      const v=parseFloat(raw);
+      if(!isNaN(v)){ d.stops[i].lat=v; savePlan(); }
+    });
+  });
+  sheet.querySelectorAll('[data-lng]').forEach(inp=>{
+    inp.addEventListener('click',ev=>ev.stopPropagation());
+    inp.addEventListener('change',()=>{
+      const i=+inp.dataset.lng, v=parseFloat(inp.value.trim());
+      if(!isNaN(v)){ d.stops[i].lng=v; savePlan(); }
+    });
+  });
+
+  // reset to original — clear confirm via toast buttons
+  const rb=document.getElementById('resetBtn');
+  if(rb) rb.onclick=e=>{
+    e.preventDefault(); e.stopPropagation();
+    const t=document.getElementById('toast');
+    clearTimeout(toastTimer);
+    t.innerHTML=`<span>Przywrócić cały oryginalny plan? Utracisz swoje zmiany.</span><span class="undo" id="rYes">Tak</span><span class="undo" id="rNo" style="color:var(--tx3)">Nie</span>`;
+    t.classList.add('show');
+    document.getElementById('rYes').onclick=()=>{ resetPlan(); cur=Math.min(cur,days.length-1); hideToast(); rebuildChips(); renderDay(); setDayBg(cur); showToast('Przywrócono oryginalny plan ✓'); };
+    document.getElementById('rNo').onclick=hideToast;
+  };
+
+  // drag & drop reorder via handle
+  enableDrag(sheet);
+}
+
+function moveStop(i,dir){
+  const d=days[cur], j=i+dir;
+  if(j<0||j>=d.stops.length)return;
+  [d.stops[i],d.stops[j]]=[d.stops[j],d.stops[i]];
+  savePlan(); renderDay();
+}
+
+function deleteStop(i){
+  const d=days[cur];
+  lastDeleted={dayIdx:cur, idx:i, stop:d.stops[i]};
+  d.stops.splice(i,1);
+  savePlan(); renderDay();
+  showToast('Usunięto przystanek', ()=>{
+    if(lastDeleted){
+      days[lastDeleted.dayIdx].stops.splice(lastDeleted.idx,0,lastDeleted.stop);
+      lastDeleted=null; savePlan();
+      if(cur===days[cur]) {} renderDay();
+    }
+  });
+}
+
+function addStop(){
+  const d=days[cur];
+  const ref=d.stops[d.stops.length-1]||{lat:40.0,lng:-100.0};
+  d.stops.push({name:'', desc:'', lat:ref.lat, lng:ref.lng});
+  savePlan(); renderDay();
+  requestAnimationFrame(()=>{
+    const c=document.getElementById('content');
+    c.scrollTo({top:c.scrollHeight, behavior:'smooth'});
+    setTimeout(()=>{
+      const names=document.querySelectorAll('.sname[contenteditable]');
+      const last=names[names.length-1];
+      if(last){ last.focus(); }
+    },300);
+  });
+}
+
+/* ═══ SMOOTH DRAG & DROP ═══
+   Floating clone follows the finger; a live drop-line shows where it lands;
+   other cards slide out of the way. */
+function enableDrag(sheet){
+  const stopEls=[...sheet.querySelectorAll('.stop')];
+  let dragging=null, ghost=null, startY=0, startTop=0, targetIdx=-1, fromIdx=-1, rects=[];
+
+  function beginDrag(stop, clientY){
+    fromIdx=+stop.dataset.i; targetIdx=fromIdx;
+    dragging=stop;
+    const r=stop.getBoundingClientRect();
+    startY=clientY; startTop=r.top;
+    // build ghost that follows finger
+    ghost=stop.cloneNode(true);
+    ghost.classList.add('dragging');
+    ghost.style.position='fixed';
+    ghost.style.left=r.left+'px';
+    ghost.style.top=r.top+'px';
+    ghost.style.width=r.width+'px';
+    ghost.style.margin='0';
+    ghost.style.pointerEvents='none';
+    document.body.appendChild(ghost);
+    stop.style.opacity='0.18';
+    stop.querySelector('.snum')?.classList.add('grabbing');
+    // cache positions of all stops
+    rects=stopEls.map(s=>({el:s, mid:s.getBoundingClientRect().top+s.getBoundingClientRect().height/2}));
+  }
+
+  function moveDrag(clientY){
+    if(!dragging)return;
+    const dy=clientY-startY;
+    ghost.style.top=(startTop+dy)+'px';
+    // figure out which slot the finger is over
+    let idx=stopEls.length-1;
+    for(let k=0;k<rects.length;k++){
+      if(clientY < rects[k].mid){ idx=k; break; }
+    }
+    if(idx!==targetIdx){
+      targetIdx=idx;
+      // shift cards to open a gap
+      stopEls.forEach((s,k)=>{
+        s.classList.remove('shift-up','shift-down');
+        if(s===dragging)return;
+        const realK=+s.dataset.i;
+        if(fromIdx<targetIdx && realK>fromIdx && realK<=targetIdx) s.classList.add('shift-up');
+        else if(fromIdx>targetIdx && realK<fromIdx && realK>=targetIdx) s.classList.add('shift-down');
+      });
+    }
+  }
+
+  function endDrag(){
+    if(!dragging)return;
+    const d=days[cur];
+    stopEls.forEach(s=>s.classList.remove('shift-up','shift-down'));
+    dragging.style.opacity='';
+    dragging.querySelector('.snum')?.classList.remove('grabbing');
+    if(ghost){ ghost.remove(); ghost=null; }
+    if(targetIdx!==fromIdx && targetIdx>=0){
+      const [moved]=d.stops.splice(fromIdx,1);
+      d.stops.splice(targetIdx,0,moved);
+      savePlan();
+    }
+    dragging=null;
+    renderDay();
+  }
+
+  stopEls.forEach(stop=>{
+    const handle=stop.querySelector('[data-handle]');
+    if(!handle)return;
+
+    // touch
+    handle.addEventListener('touchstart',e=>{
+      beginDrag(stop, e.touches[0].clientY);
+    },{passive:true});
+    handle.addEventListener('touchmove',e=>{
+      if(!dragging)return;
+      e.preventDefault();
+      moveDrag(e.touches[0].clientY);
+      autoScroll(e.touches[0].clientY);
+    },{passive:false});
+    handle.addEventListener('touchend',()=>{ stopAutoScroll(); endDrag(); });
+    handle.addEventListener('touchcancel',()=>{ stopAutoScroll(); endDrag(); });
+
+    // mouse (desktop)
+    handle.addEventListener('mousedown',e=>{
+      e.preventDefault();
+      beginDrag(stop, e.clientY);
+      const mm=ev=>{ moveDrag(ev.clientY); autoScroll(ev.clientY); };
+      const mu=()=>{ document.removeEventListener('mousemove',mm); document.removeEventListener('mouseup',mu); stopAutoScroll(); endDrag(); };
+      document.addEventListener('mousemove',mm);
+      document.addEventListener('mouseup',mu);
+    });
+  });
+
+  // auto-scroll when dragging near top/bottom edges
+  let scrollRAF=null;
+  function autoScroll(clientY){
+    const c=document.getElementById('content');
+    const rect=c.getBoundingClientRect();
+    let dir=0;
+    if(clientY < rect.top+80) dir=-1;
+    else if(clientY > rect.bottom-80) dir=1;
+    stopAutoScroll();
+    if(dir!==0){
+      const step=()=>{
+        c.scrollTop += dir*8;
+        // update ghost + gap continuously while auto-scrolling
+        rects=stopEls.map(s=>{const r=s.getBoundingClientRect();return{el:s, mid:r.top+r.height/2};});
+        moveDrag(clientY);
+        scrollRAF=requestAnimationFrame(step);
+      };
+      scrollRAF=requestAnimationFrame(step);
+    }
+  }
+  function stopAutoScroll(){ if(scrollRAF){ cancelAnimationFrame(scrollRAF); scrollRAF=null; } }
+}
+
+/* toast with optional undo */
+function showToast(msg, undoFn){
+  const t=document.getElementById('toast');
+  clearTimeout(toastTimer);
+  t.innerHTML=`<span>${msg}</span>`+(undoFn?`<span class="undo">Cofnij</span>`:'');
+  if(undoFn){ t.querySelector('.undo').onclick=()=>{ undoFn(); hideToast(); }; }
+  t.classList.add('show');
+  toastTimer=setTimeout(hideToast, undoFn?5000:2200);
+}
+function hideToast(){ document.getElementById('toast').classList.remove('show'); }
+function switchDay(i,dir){
+  if(i===cur||i<0||i>=days.length)return;
+  editMode=false; // leave edit mode when changing day
+  showHidden=false; // ukryte znów schowane na nowym dniu
+  const goingRight=(dir!==undefined)?dir:(i>cur);
+  cur=i;
+  document.querySelectorAll('.chip').forEach((c,j)=>c.classList.toggle('active',j===i));
+  const act=document.querySelectorAll('.chip')[i];
+  if(act) act.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+  const c=document.getElementById('content');
+  c.className=goingRight?'sl-out-l':'sl-out-r';
+  setTimeout(()=>{
+    renderDay(); setDayBg(cur);
+    c.scrollTop=0; updateProg();
+    c.className=goingRight?'sl-in-l':'sl-in-r';
+  },160);
+}
+
+/* ═══ SCROLL: parallax + progress ═══ */
+const content=document.getElementById('content');
+function updateProg(){
+  const max=content.scrollHeight-content.clientHeight;
+  const p=max>0?(content.scrollTop/max)*100:0;
+  document.getElementById('progFill').style.width=p+'%';
+  const y=Math.min(content.scrollTop*.1,60);
+  document.getElementById('bgWrap').style.transform=`translateY(${-y}px)`;
+}
+content.addEventListener('scroll',updateProg,{passive:true});
+
+/* ═══ SWIPE ═══ */
+let tx0=0,ty0=0;
+content.addEventListener('touchstart',e=>{tx0=e.touches[0].clientX; ty0=e.touches[0].clientY},{passive:true});
+content.addEventListener('touchend',e=>{
+  if(editMode)return; // don't swipe days while editing
+  if(settings && settings.swipe===false)return;
+  const dx=e.changedTouches[0].clientX-tx0, dy=e.changedTouches[0].clientY-ty0;
+  if(Math.abs(dx)>72&&Math.abs(dy)<46){
+    if(dx<0) switchDay(cur+1,true); else switchDay(cur-1,false);
+  }
+},{passive:true});
+
+/* ═══ THEME (steruje przez settings) ═══ */
+(function(){
+  const btn=document.getElementById('tbtn');
+  btn.addEventListener('click',()=>{
+    settings.theme = settings.theme==='dark'?'light':'dark';
+    applySettings(); saveSettings(); syncToggles();
+  });
+})();
+
+/* ═══ SETTINGS PANEL ═══ */
+function updateSaveStatus(){
+  const el=document.getElementById('setStatus');
+  if(!el)return;
+  if(dirty){
+    el.className='set-status unsaved';
+    el.textContent='● Masz niezapisane zmiany — kliknij „Zapisz zmiany"';
+  }else if(hasSavedData()){
+    el.className='set-status saved';
+    el.textContent='✓ Zmiany zapisane — zostaną po zamknięciu aplikacji';
+  }else{
+    el.className='set-status';
+    el.textContent='Plan w wersji oryginalnej';
+  }
+}
+function syncToggles(){
+  const set=(id,on)=>{ const t=document.getElementById(id); if(t) t.classList.toggle('on',!!on); };
+  set('tgTheme', settings.theme==='dark');
+  set('tgPhotos', settings.photos);
+  set('tgAnim', settings.anim);
+  set('tgSwipe', settings.swipe);
+  set('tgAutoToday', settings.autoToday);
+  set('tgWeather', settings.weather);
+}
+(function(){
+  const panel=document.getElementById('setPanel');
+  const overlay=document.getElementById('setOverlay');
+  function open(){ overlay.classList.add('show'); panel.classList.add('show'); updateSaveStatus(); syncToggles(); const vl=document.getElementById('verLabel'); if(vl) vl.textContent='Wersja '+APP_VERSION; }
+  function close(){ overlay.classList.remove('show'); panel.classList.remove('show'); }
+
+  document.getElementById('setBtn').onclick=open;
+  document.getElementById('setClose').onclick=close;
+  overlay.onclick=close;
+
+  // Save / delete / reset
+  document.getElementById('saveBtn').onclick=()=>{ commitPlan(); showToast('Zapisano ✓ Zostanie po zamknięciu'); };
+  document.getElementById('delBtn').onclick=()=>{
+    const t=document.getElementById('toast'); clearTimeout(toastTimer);
+    t.innerHTML=`<span>Usunąć zapisany plan i wrócić do oryginału?</span><span class="undo" id="dYes">Usuń</span><span class="undo" id="dNo" style="color:var(--tx3)">Anuluj</span>`;
+    t.classList.add('show');
+    document.getElementById('dYes').onclick=()=>{ resetPlan(); cur=Math.min(cur,days.length-1); editMode=false; hideToast(); rebuildChips(); renderDay(); setDayBg(cur); updateSaveStatus(); showToast('Usunięto zapis — przywrócono oryginał'); };
+    document.getElementById('dNo').onclick=hideToast;
+  };
+
+  // Export
+  document.getElementById('exportBtn').onclick=()=>{
+    try{
+      const blob=new Blob([JSON.stringify({v:1, plan:days, savedAt:new Date().toISOString()},null,2)],{type:'application/json'});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');
+      a.href=url; a.download='USA2026-moj-plan.json';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),1000);
+      showToast('Wyeksportowano plik z planem 📤');
+    }catch(e){ showToast('Nie udało się wyeksportować'); }
+  };
+  // Import
+  const fileInp=document.getElementById('importFile');
+  document.getElementById('importBtn').onclick=()=>fileInp.click();
+  fileInp.onchange=()=>{
+    const f=fileInp.files[0]; if(!f)return;
+    const rd=new FileReader();
+    rd.onload=()=>{
+      try{
+        const data=JSON.parse(rd.result);
+        const plan=data.plan||data;
+        if(!Array.isArray(plan)||!plan[0]||!plan[0].stops) throw 0;
+        days=plan; cur=Math.min(cur,days.length-1);
+        commitPlan(); editMode=false; rebuildChips(); renderDay(); setDayBg(cur);
+        updateSaveStatus(); showToast('Wczytano plan z pliku ✓');
+      }catch(e){ showToast('Nieprawidłowy plik planu'); }
+      fileInp.value='';
+    };
+    rd.readAsText(f);
+  };
+
+  // Jump to today
+  document.getElementById('jumpTodayBtn').onclick=()=>{
+    const idx=todayDayIndex();
+    close();
+    if(idx>=0){ switchDay(idx, idx>cur); showToast('Otwarto dzisiejszy dzień 📅'); }
+    else showToast('Dziś nie ma dnia w planie (wyjazd 12–30 lipca)');
+  };
+
+  // Toggles
+  document.getElementById('tgTheme').onclick=()=>{ settings.theme=settings.theme==='dark'?'light':'dark'; applySettings(); saveSettings(); syncToggles(); };
+  document.getElementById('tgPhotos').onclick=()=>{ settings.photos=!settings.photos; applySettings(); saveSettings(); syncToggles(); setDayBg(cur); };
+  document.getElementById('tgAnim').onclick=()=>{ settings.anim=!settings.anim; applySettings(); saveSettings(); syncToggles(); };
+  document.getElementById('tgSwipe').onclick=()=>{ settings.swipe=!settings.swipe; saveSettings(); syncToggles(); };
+  const ub=document.getElementById('updateBtn');
+  if(ub) ub.onclick=()=>{ showToast('Sprawdzam aktualizacje…'); checkForUpdate(true); };
+  document.getElementById('tgAutoToday').onclick=()=>{ settings.autoToday=!settings.autoToday; saveSettings(); syncToggles(); };
+  const wt=document.getElementById('tgWeather');
+  if(wt) wt.onclick=()=>{ settings.weather=!settings.weather; saveSettings(); syncToggles(); if(settings.weather){ loadWeather(); } else { document.querySelectorAll('.stemp').forEach(el=>{el.textContent='';el.classList.remove('has');}); const hw=document.getElementById('heroWeather'); if(hw) hw.innerHTML=''; } };
+})();
+
+// warn before leaving with unsaved changes
+window.addEventListener('beforeunload',(e)=>{
+  if(dirty){ e.preventDefault(); e.returnValue=''; }
+});
+
+/* ═══ INIT ═══ */
+function todayDayIndex(){
+  const now=new Date();
+  const dd=String(now.getDate()).padStart(2,'0'), mm=String(now.getMonth()+1).padStart(2,'0');
+  const key=`${dd}.${mm}`;
+  return days.findIndex(d=>d.date===key);
+}
+bgActive=document.getElementById('bgA');
+bgStandby=document.getElementById('bgB');
+applySettings();
+// otwórz na dzisiejszym dniu, jeśli mieści się w terminie wyjazdu i opcja włączona
+if(settings.autoToday!==false){
+  const t=todayDayIndex();
+  if(t>=0) cur=t;
+}
+buildChips();
+document.querySelectorAll('.chip').forEach((c,j)=>c.classList.toggle('active',j===cur));
+renderDay();
+setDayBg(cur);
+updateSaveStatus();
+// dosuń chip aktywnego dnia do widoku
+requestAnimationFrame(()=>{
+  const act=document.querySelectorAll('.chip')[cur];
+  if(act) act.scrollIntoView({behavior:'auto',block:'nearest',inline:'center'});
+});
+// sprawdź aktualizacje wkrótce po starcie
+let updateChecking=false, updateFound=false;
+setTimeout(()=>checkForUpdate(), 1500);
+
+/* ═══ WZNOWIENIE (iOS skrót/PWA nie ładuje strony od nowa) ═══
+   Gdy wracasz do „aplikacji" z ekranu głównego, iOS przywraca zamrożony
+   stan zamiast uruchamiać skrypt. Ten kod przeskakuje na dzisiejszy dzień
+   również przy ponownym pokazaniu, o ile aplikacja była schowana dłużej. */
+let hiddenSince=0;
+function maybeJumpToToday(minHiddenMs){
+  if(settings.autoToday===false) return;
+  if(editMode) return;                       // nie wyrywaj z edycji
+  // jeśli podano próg – sprawdź jak długo aplikacja była schowana
+  if(minHiddenMs && hiddenSince && (Date.now()-hiddenSince) < minHiddenMs) return;
+  const t=todayDayIndex();
+  if(t>=0 && t!==cur){ switchDay(t, t>cur); }
+}
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='hidden'){ hiddenSince=Date.now(); }
+  else if(document.visibilityState==='visible'){ maybeJumpToToday(1500); hiddenSince=0; checkForUpdate(); }
+});
+// bfcache restore (iOS Safari/PWA po wznowieniu)
+window.addEventListener('pageshow',(e)=>{ if(e.persisted){ maybeJumpToToday(0); checkForUpdate(); } });
+
+/* ═══ AUTO-AKTUALIZACJA (iOS skrót cache'uje starą wersję) ═══
+   Pobiera świeżą kopię samej strony (z pominięciem cache), czyta wersję
+   i jeśli jest nowsza niż uruchomiona — proponuje odświeżenie. Dzięki temu
+   skrót na ekranie głównym sam wychwyci nową wersję po podmianie pliku. */
+async function checkForUpdate(manual){
+  if(updateChecking) return;
+  if(updateFound && !manual){ return; }
+  updateChecking=true;
+  try{
+    const base=location.href.split('#')[0].split('?')[0];
+    const res=await fetch(base+'?_cc='+Date.now(), {cache:'no-store'});
+    const txt=await res.text();
+    const m=txt.match(/APP_VERSION='([^']+)'/);
+    const remote=m?m[1]:null;
+    if(remote && remote!==APP_VERSION){
+      updateFound=true;
+      showUpdateBanner(remote);
+    }else if(manual){
+      showToast('Masz najnowszą wersję ✓ ('+APP_VERSION+')');
+    }
+  }catch(e){
+    if(manual) showToast('Nie udało się sprawdzić (brak internetu?)');
+  }finally{ updateChecking=false; }
+}
+function showUpdateBanner(remoteVer){
+  if(document.getElementById('updBanner')) return;
+  const b=document.createElement('div');
+  b.id='updBanner';
+  b.innerHTML=`<span>🔄 Dostępna nowa wersja planu</span><button id="updNow">Odśwież</button>`;
+  document.body.appendChild(b);
+  document.getElementById('updNow').onclick=()=>{
+    // przejście na świeży adres z wersją = wymusza pobranie nowego pliku
+    const base=location.href.split('#')[0].split('?')[0];
+    location.replace(base+'?v='+encodeURIComponent(remoteVer));
+  };
+}
+
+</script>
+</body>
+</html>
